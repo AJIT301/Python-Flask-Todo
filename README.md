@@ -43,45 +43,55 @@ A full-stack **Flask-based web application** built for learning and teaching mod
 ## 📁 Project Structure
 
 ```
-├── app/
-│   ├── __init__.py           # App factory, db, login_manager
-│   ├── models.py              # User, Todo, UserGroup with relationships
-│   ├── routes.py              # Main routes: /dashboard, /todos
-│   ├── routes_local.py        # Debug/test routes (local use)
-│   ├── sanitize_module.py     # 🔬 Custom sanitizer for input fields
-│   ├── seeder.py              # Script to create fake users/groups
-│   ├── storage.py             # Optional: Save todos to JSON
-│   ├── utils.py               # Helpers (e.g., date formatting)
-│   ├── validation.py          # Form/data validation logic
-│   ├── error_handlers.py      # Custom 404, 500 pages
-│   └── ex.py                  # Example/demo code (educational)
-│
-├── static/
-│   ├── index.css              # Main styling
-│   ├── edit.css               # Edit page style
-│   ├── inspect.css            # Inspection view
-│   └── ac855908-...png        # Background image
-│
-├── templates/
-│   ├── login.html             # Auth page
-│   ├── index.html             # Todo list
-│   ├── edit.html              # Edit task
-│   ├── inspect.html           # Admin/task inspection view
-│   ├── 404.html               # Not found
-│   └── 500.html               # Server error
-│
-├── tests/
-│   ├── test_sanitize.py       # Test sanitizer logic
-│   └── ltu.py                 # Learning test utils
-│
-├── .env                       # Environment variables (SECRET_KEY, etc.)
-├── .gitignore
-├── requirements.txt           # pip dependencies
-├── app.py                     # Entry point (creates app, runs server)
-├── testdb.py                  # DB test script
-├── todos.json                 # Optional JSON storage
-├── learning_notes.txt         # Dev notes & ideas
-└── README.md                  # This file
+├── 📁 .git/ 🚫 (auto-hidden)
+├── 📁 .pytest_cache/ 🚫 (auto-hidden)
+├── 📁 app/
+│   ├── 📁 __pycache__/ 🚫 (auto-hidden)
+│   ├── 🐍 __init__.py
+│   ├── 🐍 error_handlers.py
+│   ├── 🐍 ex.py
+│   ├── 🐍 models.py
+│   ├── 🐍 routes.py
+│   ├── 🐍 routes_local.py
+│   ├── 🐍 sanitize_module.py
+│   ├── 🐍 seeder.py
+│   ├── 🐍 storage.py
+│   ├── 🐍 utils.py
+│   └── 🐍 validation.py
+├── 📁 not_used/ 🚫 (auto-hidden)
+├── 📁 static/
+│   ├── 🖼️ ac855908-32a4-4ac0-943a-3e8d35e4a465.png
+│   ├── 🎨 dashboard.css
+│   ├── 🎨 edit.css
+│   ├── 🎨 index.css
+│   └── 🎨 inspect.css
+├── 📁 templates/
+│   ├── 🌐 404.html
+│   ├── 🌐 500.html
+│   ├── 🌐 dashboard.html
+│   ├── 🌐 edit.html
+│   ├── 🌐 index.html
+│   ├── 🌐 inspect.html
+│   ├── 🌐 login.html
+│   └── 🌐 register.html
+├── 📁 tests/
+│   ├── 📁 __pycache__/ 🚫 (auto-hidden)
+│   ├── 🐍 __init__.py
+│   ├── 🐍 ltu.py
+│   └── 🐍 test_sanitize.py
+├── 📁 venv/ 🚫 (auto-hidden)
+├── 🔒 .env 🚫 (auto-hidden)
+├── 🚫 .gitignore
+├── 📖 README.md
+├── 🐍 app.py
+├── 🐍 app_livereload.py
+├── 🐍 error404.py
+├── 📄 learning_notes.txt
+├── 📄 requirements.txt
+├── 🐍 reset.py
+├── 📋 suspicious_input.log 🚫 (auto-hidden)
+├── 🐍 testdb.py
+└── 📄 todos.json
 ```
 
 > 🚫 Folders like `.git`, `__pycache__`, `venv`, `.pytest_cache` are hidden or auto-generated.
