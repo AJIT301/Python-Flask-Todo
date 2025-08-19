@@ -1,0 +1,150 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+}
+
+
+.user_panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    text-align: right;
+}
+
+.user_nav {
+    margin-bottom: 0.5rem;
+}
+
+.user_data ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.user_data li {
+    margin: 0.2rem 0;
+}
+
+.text-bold {
+    font-weight: 700;
+    margin-right: 0.3rem;
+}
+
+.button-login {
+    padding: 10px 15px;
+    border: none;
+    background-image:
+        radial-gradient(ellipse at top left,
+            #c0ebbe, #3f4144);
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.check-form {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+form {
+    display: inline;
+}
+
+.container {
+    max-width: 700px;
+    width: 100%;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.container h1 {
+    text-align: center;
+    color: #444;
+}
+
+.container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.container li {
+    padding: 12px 8px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+.incomplete {
+    text-decoration: #007bff;
+}
+
+.actions a {
+    margin-left: 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.actions a:hover {
+    text-decoration: underline;
+}
+
+.add-form {
+    display: flex;
+    margin-top: 20px;
+}
+
+.add-form input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.add-form button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+body>div>ul>li>div.todo-item>span {
+    min-width: 150px;
+}
+
+.display {
+    display: none;
+}

@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App</title>
-     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
-    <style>
-    </style>
+    <title>Todo App Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>My To-Do List</h1>
+        <h1>Welcome to Todo App</h1>
         
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -21,55 +19,11 @@
             {% endif %}
         {% endwith %}
         
-        <ul>
-            {% for todo in todos %}
-            <li>
-                <div class="todo-item">
-                     <form action="{{ url_for('routes.toggle_todo', todo_id=todo.id) }}" method="POST" class="todo-item">
-                        <input type="checkbox" name="done" {% if todo.done %}checked{% endif %} onchange="this.form.submit()" aria-label="Mark todo as done">
-                    </form>
-                    <span class="{% if todo.done %}completed{% else %}incomplete{% endif %}">{{ todo.task }}</span>
-                </div>
-                {% if todo.date_from and todo.date_to %}
-                    <div class="todo-dates">
-                        <small>From: {{ todo.date_from|datetime_british }} To: {{ todo.date_to|datetime_british }}</small>
-                    </div>
-                {% endif %}
-                <div class="actions">
-                    <a href="{{ url_for('routes.edit', todo_id=todo.id) }}">Edit</a>
-                    <form action="{{ url_for('routes.delete', todo_id=todo.id) }}" method="POST" ">
-                        <a href="javascript:void(0)" onclick="if(confirm('Are you sure?')) this.parentNode.submit()">Delete</a>
-                    </form>
-                    <a href="{{ url_for('routes.inspect', todo_id=todo.id) }}">Inspect</a>
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-        <form class="add-form" action="{{ url_for('routes.add') }}" method="POST">
-            <input type="text" id="todo-input" name="todo" placeholder="Add a new task..." required>
-            <div class="term-selection">
-                <input type="checkbox" id="select-term-checkbox" name="has_date_range" onchange="toggleTermInputs()">
-                <label for="select-term-checkbox">Select term</label>
-            </div>
-            <div id="term-inputs" class="display">
-                <label for="date-from">From:</label>
-                <input type="datetime-local" id="date-from" name="date_from">
-                <label for="date-to">To:</label>
-                <input type="datetime-local" id="date-to" name="date_to">
-            </div>
-            <button type="submit">Add</button>
-        </form>
+        <div class="menu">
+            <a href="{{ url_for('routes.login') }}">Login as User</a><br>
+            <a href="{{ url_for('routes.login') }}?admin=1">Login as Admin</a><br>
+            <a href="{{ url_for('routes.register') }}">Register</a>
+        </div>
     </div>
-    <script>
-        function toggleTermInputs() {
-            var checkbox = document.getElementById('select-term-checkbox');
-            var termInputs = document.getElementById('term-inputs');
-            if (checkbox.checked) {
-                termInputs.style.display = 'block';
-            } else {
-                termInputs.style.display = 'none';
-            }
-        }
-    </script>
 </body>
 </html>
