@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspect Task</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='inspect.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Details</h1>
+        <div class="task-details {% if task_status == 'overdue' %}pulsate{% endif %}">
+            <h2>{{ todo.task }}</h2>
+            
+            <p><strong>Status:</strong> 
+                {% if todo.done %}
+                    <span style="color: green;">✓ Completed</span>
+                {% else %}
+                    <span style="color: orange;">⏳ Pending</span>
+                {% endif %}
+            </p>
+            
+            <p><strong>Date created:</strong> {{ todo.created_at|datetime_british }}</p>
+
+            {% if todo.updated_at and todo.updated_at != todo.created_at %}
+            <p><strong>Last edited:</strong> {{ todo.updated_at|datetime_british }}</p>
+            {% endif %}
+
+            {% if todo.date_from and todo.date_to %}
+            <p><strong>Schedule:</strong> From {{ todo.date_from|datetime_british }} till {{ todo.date_to|datetime_british }}</p>
+            
+            {% if task_status == 'overdue' %}
+                <p style="color: red;"><strong>⚠️ This task is overdue!</strong></p>
+            {% elif task_status == 'active' %}
+                <p style="color: blue;"><strong>📅 This task is currently active!</strong></p>
+            {% elif task_status == 'future' %}
+                <p style="color: green;"><strong>⏰ This task is scheduled for the future.</strong></p>
+            {% endif %}
+            {% endif %}
+            
+            <p><strong>Task ID:</strong> <code>{{ todo_id }}</code></p>
+        </div>
+        <div class="actions" style="margin-top: 20px;">
+            <a href="{{ url_for('routes.edit', todo_id=todo_id) }}" class="edit-link">Edit Task</a>
+            <form action="{{ url_for('routes.toggle_todo', todo_id=todo_id) }}" method="POST" style="display: inline;">
+                <button type="submit">
+                    {% if todo.done %}Mark as Incomplete{% else %}Mark as Complete{% endif %}
+                </button>
+            </form>
+            <a href="{{ url_for('routes.index') }}" class="back-link">Back to list</a>
+        </div>
+    </div>
+</body>
+</html>

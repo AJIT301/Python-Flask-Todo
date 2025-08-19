@@ -1,0 +1,44 @@
+.\venv\Scripts\Activate.ps1  > activate VENV before doing anything in this project. 
+
+--UNIT TEST
+pip install pytest  > Install pytest
+pytest tests/test_sanitize.py -v
+--put test file in separate folder todo/tests/
+pytest tests/test_sanitize.py -v
+
+--Seeder for seeding the DB--
+flask seed --count=20
+flask seed --clear --count=20 > Clear all users from DB before seeding new data
+flask seed --clean  > Deletes all values from database. Asks for confirmation before proceeding.
+
+
+
+pip install python-dotenv > Environment variables file
+pip install psycopg2-binary > Database connection library for PostgreSQL
+pip install Flask-SQLAlchemy > Flask extension for SQLAlchemy
+pip install flask_sqlalchemy --upgrade > Flask extension for SQLAlchemy
+
+
+
+--SQL user "admin" creation--
+-- Create admin user with login and password
+CREATE ROLE admin WITH LOGIN PASSWORD 'admin_secure_password';
+
+-- Grant connection to the database
+GRANT CONNECT ON DATABASE todo_db TO admin;
+
+-- Switch to your database to grant table-level permissions
+\c todo_db
+
+-- Grant usage on public schema (default schema)
+GRANT USAGE ON SCHEMA public TO admin;
+
+-- Grant all data privileges on all tables in public schema
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO admin;
+
+-- Optional: Grant privileges on sequences if you have serial/identity columns
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO admin;
+
+-- Future tables: grant privileges automatically
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO admin;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO admin;

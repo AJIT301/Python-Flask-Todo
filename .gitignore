@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment folder
+venv/
+.env
+
+# Flask instance folder (if any)
+instance/
+
+# Pytest cache
+.pytest_cache/
+
+# mypy cache
+.mypy_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Logs
+*.log
+suspicious_input.log
+
+# SQLite DB (if used accidentally)
+*.db
+
+# VSCode settings (optional, if you want to ignore)
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+#not_used folder
+not_used/
