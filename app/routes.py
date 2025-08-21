@@ -6,10 +6,8 @@ from flask import (
     url_for,
     flash,
     jsonify,
-    current_app,
 )
 from flask_login import (
-    LoginManager,
     login_user,
     logout_user,
     login_required,
@@ -56,6 +54,7 @@ def get_current_user_id():
     any_user = User.query.first()
     return any_user.id if any_user else None
 
+
 @bp.route("/secret")
 @login_required
 def secret():
@@ -70,32 +69,75 @@ def index():
 # ---------------- LOGIN / LOGOUT ----------------
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    username = ""
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
-        if user and user.password == password:  # replace with hash check if hashed
-            login_user(user)
-            flash("✅ Logged in successfully.")
-            next_page = request.args.get("next")
-            return redirect(next_page or url_for("routes.dashboard"))
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+
+        missing = []
+        if not username:
+            missing.append("username")
+        if not password:
+            missing.append("password")
+
+        if missing:
+            if len(missing) == 2:
+                flash("⚠️ Please provide both username and password.", "error")
+            else:
+                flash(f"⚠️ Please provide {missing[0]}.", "error")
         else:
-            flash("❌ Invalid username or password.")
-    return render_template("login.html")
+            user = User.query.filter_by(username=username).first()
+            if user and user.password == password:
+                login_user(user)
+                flash("✅ Logged in successfully.", "success")
+                next_page = request.args.get("next")
+
+                # ✅ Ensure next_page is safe and not /login
+                if not next_page or next_page == url_for("routes.login"):
+                    next_page = url_for("routes.dashboard")
+                return redirect(next_page)
+            else:
+                flash("❌ Invalid username or password.", "error")
+    return render_template("login.html", username=username)
 
 
 @bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    flash("✅ Logged out successfully.")
-    return redirect(url_for("routes.index"))
+    flash("✅ Logged out successfully.", "success")
+
+    # Always go to login page without next param
+    return redirect(url_for("routes.login"))
+
+
+# ---------------- LOGIN / LOGOUT END ----------------
+
+
+# ---------------- REGISTER ----------------
 
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
-    # your registration logic here
+    if request.method == "POST":
+        username = request.form.get("username").strip()
+        password = request.form.get("password").strip()
+
+        if not username:
+            flash("⚠️ Please provide a username.", "error")
+        elif not password:
+            flash("⚠️ Please provide a password.", "error")
+        elif User.query.filter_by(username=username).first():
+            flash("⚠️ Username already exists.", "error")
+        else:
+            new_user = User(username=username, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash("✅ Registration successful. You can log in now.", "success")
+            return redirect(url_for("routes.login"))
+
     return render_template("register.html")
+
 
 # ---------------- DASHBOARD ----------------
 @bp.route("/dashboard")
@@ -107,40 +149,49 @@ def dashboard():
         return render_template(
             "dashboard.html",
             todos=todos_list,
-            user=current_user   # 👈 pass user for Jinja2 panel
+            user=current_user,  # 👈 pass user for Jinja2 panel
         )
     except Exception as e:
         logger.error(f"Database error in dashboard: {e}")
         flash("Error loading tasks", "error")
         return render_template("dashboard.html", todos=[], user=current_user)
+
+
 ################################################################
-
-
 @bp.route("/add", methods=["POST"])
+@login_required
 def add():
     """Add a new todo"""
     try:
-        # Check if we've reached the maximum number of todos
-        todo_count = Todo.query.count()
-        if todo_count >= MAX_TODOS:
+        if Todo.query.count() >= MAX_TODOS:
             flash("Maximum number of todos reached", "error")
             return redirect(url_for("routes.dashboard"))
 
-        # Get form input and sanitize with heuristic scoring
+        # Sanitize input
         safe_text, score, matches = sanitize_input(request.form.get("todo"))
-
-        # Decide how to handle suspicious input
         if score >= 5:
             flash("Blocked: suspicious content detected", "error")
             return redirect(url_for("routes.dashboard"))
         elif score >= 3:
             logger.warning(f"Flagged TODO input | Score={score} | Matches={matches}")
 
+        # Check if date range is selected
         has_date_range = request.form.get("has_date_range") == "on"
         date_from = request.form.get("date_from") if has_date_range else None
         date_to = request.form.get("date_to") if has_date_range else None
 
-        # Validate input
+        # Validation for missing date inputs
+        if has_date_range and (not date_from or not date_to):
+            flash(
+                "Please select both 'from' and 'to' dates or uncheck the date range",
+                "error",
+            )
+            return redirect(url_for("routes.dashboard"))
+
+        # Convert and validate dates
+        parsed_date_from = datetime.fromisoformat(date_from) if date_from else None
+        parsed_date_to = datetime.fromisoformat(date_to) if date_to else None
+
         errors, parsed_date_from, parsed_date_to = validate_todo_input(
             safe_text, date_from, date_to
         )
@@ -150,25 +201,22 @@ def add():
                 flash(error, "error")
             return redirect(url_for("routes.dashboard"))
 
-        # Get user ID for created_by_id
         creator_id = get_current_user_id()
         if not creator_id:
             flash("Error: No user found to create todo", "error")
             return redirect(url_for("routes.dashboard"))
 
-        # Create new todo with created_by_id
         new_todo = Todo(
             task=safe_text,
             done=False,
-            created_at=datetime.now(),  # Use utcnow for consistency
+            created_at=datetime.now(),
             date_from=parsed_date_from,
             date_to=parsed_date_to,
-            created_by_id=creator_id,  # This was missing!
+            created_by_id=creator_id,
         )
 
         db.session.add(new_todo)
         db.session.commit()
-
         flash("Task added successfully", "success")
         return redirect(url_for("routes.dashboard"))
 
@@ -180,6 +228,7 @@ def add():
 
 
 @bp.route("/edit/<todo_id>", methods=["GET", "POST"])
+@login_required
 def edit(todo_id):
     """Edit an existing todo"""
     try:
@@ -229,6 +278,7 @@ def edit(todo_id):
 
 
 @bp.route("/toggle/<todo_id>", methods=["POST"])
+@login_required
 def toggle_todo(todo_id):
     """Toggle todo completion status"""
     try:
@@ -252,6 +302,7 @@ def toggle_todo(todo_id):
 
 
 @bp.route("/delete/<todo_id>", methods=["POST"])
+@login_required
 def delete(todo_id):
     """Delete a todo"""
     try:
@@ -271,6 +322,7 @@ def delete(todo_id):
 
 
 @bp.route("/inspect/<todo_id>")
+@login_required
 def inspect(todo_id):
     """View detailed information about a todo"""
     try:
@@ -303,6 +355,7 @@ def inspect(todo_id):
 
 
 @bp.route("/api/todos")
+@login_required
 def api_todos():
     """API endpoint to get todos as JSON"""
     try:
@@ -319,6 +372,7 @@ def api_todos():
 
 
 @bp.route("/api/stats")
+@login_required
 def api_stats():
     """API endpoint to get todo statistics"""
     try:

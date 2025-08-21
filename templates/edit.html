@@ -1,64 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}">
-    <title>Edit Todo</title>
-    <style>
-        /* Reusing some styles from index.html for consistency */
-    </style>
-</head>
+{% block title %}Todo App - Edit{% endblock %}
 
-<body>
-    <div class="container">
-        <h1>Edit Todo</h1>
+{% block content %}
+<div class="container edit-container">
+    <h1>Edit Todo</h1>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="flash-message flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+    <form class="edit-form" action="{{ url_for('routes.edit', todo_id=todo_id) }}" method="POST">
+        <input placeholder="Edit Todo" type="text" name="todo" value="{{ todo.task }}" required>
 
-        <form class="edit-form" action="{{ url_for('routes.edit', todo_id=todo_id) }}" method="POST">
-            <input placeholder="Edit Todo" type="text" name="todo" value="{{ todo.task }}" required>
+        <div class="term-selection">
+            <input type="checkbox" id="edit-term-checkbox" name="has_date_range" {% if todo.date_from or todo.date_to
+                %}checked{% endif %} onchange="toggleEditTermInputs()">
+            <label for="edit-term-checkbox">Has date range</label>
+        </div>
 
-            <div class="term-selection">
-                <input type="checkbox" id="edit-term-checkbox" name="has_date_range" {% if todo.date_from or
-                    todo.date_to %}checked{% endif %} onchange="toggleEditTermInputs()">
-                <label for="edit-term-checkbox">Has date range</label>
-            </div>
+        <div id="edit-term-inputs" class="{% if not (todo.date_from or todo.date_to) %}hidden{% endif %}">
+            <label for="edit-date-from">From:</label>
+            <input type="datetime-local" id="edit-date-from" name="date_from"
+                value="{% if todo.date_from %}{{ todo.date_from.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
 
-            <div id="edit-term-inputs" style="{% if not (todo.date_from or todo.date_to) %}display: none;{% endif %}">
-                <label for="edit-date-from">From:</label>
-                <input type="datetime-local" id="edit-date-from" name="date_from"
-                    value="{% if todo.date_from %}{{ todo.date_from.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+            <label for="edit-date-to">To:</label>
+            <input type="datetime-local" id="edit-date-to" name="date_to"
+                value="{% if todo.date_to %}{{ todo.date_to.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+        </div>
 
-                <label for="edit-date-to">To:</label>
-                <input type="datetime-local" id="edit-date-to" name="date_to"
-                    value="{% if todo.date_to %}{{ todo.date_to.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
-            </div>
+        <button type="submit">Update</button>
+    </form>
 
-            <button type="submit">Update</button>
-        </form>
-        <a href="{{ url_for('routes.index') }}" class="cancel-link">Cancel</a>
-    </div>
+    <a href="{{ url_for('routes.index') }}" class="cancel-link">Cancel</a>
 
-    <script>
-        function toggleEditTermInputs() {
-            var checkbox = document.getElementById('edit-term-checkbox');
-            var termInputs = document.getElementById('edit-term-inputs');
-            if (checkbox.checked) {
-                termInputs.style.display = 'block';
-            } else {
-                termInputs.style.display = 'none';
-            }
-        }
-    </script>
-</body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
 
-</html>
+{% block scripts %}
+<script>
+    function toggleEditTermInputs() {
+        var checkbox = document.getElementById('edit-term-checkbox');
+        var termInputs = document.getElementById('edit-term-inputs');
+        termInputs.classList.toggle('hidden', !checkbox.checked);
+    }
+</script>
+{% endblock %}

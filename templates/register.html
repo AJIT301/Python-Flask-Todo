@@ -1,24 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div>{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+{% extends "base.html" %}
+
+{% block title %}Register - Todo App{% endblock %}
+
+{% block content %}
+<div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
+</div>
+<div class="container login-container">
+    <h2>Register</h2>
     <form method="POST">
-        <input type="text" name="username" placeholder="Username">
+        <input type="text" name="username" placeholder="Username" value="{{ request.form.username or '' }}">
         <input type="password" name="password" placeholder="Password">
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
     </form>
-    <p><a href="{{ url_for('routes.register') }}">Register</a></p>
-</body>
-</html>
+
+    <p>Already have an account? <a href="{{ url_for('routes.login') }}" class="register-link">Login here</a></p>
+
+
+</div>
+{% endblock %}
