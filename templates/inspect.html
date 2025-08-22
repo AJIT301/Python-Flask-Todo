@@ -3,15 +3,6 @@
 {% block title %}Inspect Task - Todo App{% endblock %}
 
 {% block content %}
-<div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
 <div class="container inspect-container">
     <h1>Task Details</h1>
     <div class="task-details {% if task_status == 'overdue' %}pulsate{% endif %}">

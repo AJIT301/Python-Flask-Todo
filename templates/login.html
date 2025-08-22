@@ -2,25 +2,19 @@
 
 {% block title %}Login panel - Todo App{% endblock %}
 
+{% block head %}
+{% endblock %}
+
 {% block content %}
-<div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
+
 <div class="container login-container">
-
     <h2>Login</h2>
-
     <form method="POST">
-        <input type="text" name="username" placeholder="Username" value="{{ username }}">
+        <input type="text" name="username" placeholder="Username" value="{{ username }}" autocomplete="username">
         <input type="password" name="password" placeholder="Password">
         <button type="submit">Login</button>
     </form>
-    <p>Or register <a href="{{ url_for('routes.register') }}" class="register-link">Here</a></p>
+    <p>Don't have an account? Register <a href="{{ url_for('routes.register') }}" class="register-link">Here</a></p>
 </div>
+
 {% endblock %}

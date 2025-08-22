@@ -46,40 +46,6 @@ html {
     align-items: center;
 }
 
-.flash-message {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    font-weight: 600;
-    z-index: 9999;
-    opacity: 0;
-    transition: opacity 0.5s, transform 0.5s;
-}
-
-.flash-message.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-.flash-message.hide {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-}
-
-.flash-success {
-    background-color: rgba(0, 128, 0, 0.85);
-}
-
-.flash-error {
-    background-color: rgba(255, 0, 0, 0.85);
-}
-
 
 /* -----------Wrapper END----------- */
 /* -----------Wrapper END----------- */
@@ -216,7 +182,8 @@ html {
 }
 
 .container.login-container input[type="text"],
-.container.login-container input[type="password"] {
+.container.login-container input[type="password"],
+.container.login-container input[type="email"] {
     width: 100%;
     /* ensures full width */
 
@@ -230,11 +197,13 @@ html {
     transition: border-color 0.2s, box-shadow 0.2s;
     background-color: #2f46614f;
 }
-
-.container.login-container input:focus {
+.container.login-container input[type="text"]:focus,
+.container.login-container input[type="password"]:focus,
+.container.login-container input[type="email"]:focus {  /* ← Add this too */
     border-color: #94bae2;
     box-shadow: 0 0 5px rgba(91, 138, 189, 0.5);
 }
+
 
 .container.login-container button {
     padding: 12px 100px;
@@ -280,7 +249,55 @@ html {
     text-decoration: none;
     cursor: pointer;
 }
+.container.login-container select {
+    width: 100%;
+    color: rgb(229, 235, 240);
+    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #cccccc54;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #2f46614f;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dee5e7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
 
+.container.login-container select:focus {
+    border-color: #94bae2;
+    box-shadow: 0 0 5px rgba(91, 138, 189, 0.5);
+}
+
+.container.login-container select option {
+    background-color: #2f4661;
+    color: #e5ebf0;
+}
+
+.lame-captcha {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.captcha-question {
+    margin: 0;
+    font-size: 14px;
+    color: #f0eaea;
+    text-align: center;
+    font-weight: 600;
+}
+
+.container.login-container .lame-captcha input[type="text"] {
+    background-color: #3a5a7a4f;
+}
 /* --------Login.HTML END----------- */
 /* --------Login.HTML END----------- */
 
@@ -338,7 +355,6 @@ html {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    /* spacing between items */
 }
 
 /* Optional: buttons inside panel */

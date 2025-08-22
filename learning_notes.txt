@@ -1,10 +1,54 @@
 .\venv\Scripts\Activate.ps1  > activate VENV before doing anything in this project. 
 
+
+
+
+pip freeze > requirements.txt > automatically add all dependencies
+-------------------
+Option 1: SQL Seed (Quick Fix)
+
+INSERT INTO user_groups (name, description) VALUES
+('qa', 'Quality Assurance Team'),
+('frontend', 'Front-end Developers'),
+('backend', 'Back-end Developers'),
+('fullstack', 'Full-stack Developers'),
+('devops', 'DevOps Engineers'),
+('vibecoders', 'Vibe Coders Group');
+
+---sql---
+SELECT COUNT(*) FROM users;           -- Should return 0
+SELECT COUNT(*) FROM todos;           -- Should return 0
+SELECT COUNT(*) FROM user_groups;     -- Should return 0
+SELECT COUNT(*) FROM user_group_members; -- Should return 0
+
+-- Check sequences are at 1
+SELECT last_value FROM users_id_seq;     -- Should show 1
+SELECT last_value FROM todos_id_seq;     -- Should show 1
+SELECT last_value FROM user_groups_id_seq; -- Should show 1
+
+-- 1. Reset sequences for ID columns
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE todos_id_seq RESTART WITH 1;
+ALTER SEQUENCE user_groups_id_seq RESTART WITH 1;
+
+-- 2. Verify sequences are reset
+SELECT last_value FROM users_id_seq;     -- Should show 1
+SELECT last_value FROM todos_id_seq;     -- Should show 1
+SELECT last_value FROM user_groups_id_seq; -- Should show 1
+
+-- 3. Test next insert
+INSERT INTO users (username, email, password) VALUES ('test', 'test@test.com', 'pass');
+SELECT id, username FROM users;  -- Should show id=1
+-------------------
+
 --UNIT TEST
 pip install pytest  > Install pytest
 pytest tests/test_sanitize.py -v
 --put test file in separate folder todo/tests/
 pytest tests/test_sanitize.py -v
+
+
+
 
 --Seeder for seeding the DB--
 flask seed --count=20
@@ -19,10 +63,18 @@ pip install Flask-SQLAlchemy > Flask extension for SQLAlchemy
 pip install flask_sqlalchemy --upgrade > Flask extension for SQLAlchemy
 
 
+22-08-2022
+ALTER TABLE users ADD COLUMN email VARCHAR(120) UNIQUE;
+--Adding additional column to existing table--
+
+---------------------------------------------------------------
+
 
 --SQL user "admin" creation--
 -- Create admin user with login and password
 CREATE ROLE admin WITH LOGIN PASSWORD 'admin_secure_password';
+
+
 
 -- Grant connection to the database
 GRANT CONNECT ON DATABASE todo_db TO admin;

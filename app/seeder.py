@@ -4,9 +4,8 @@ import click
 from faker import Faker
 from app import db
 from app.models import Todo, User, UserGroup
-
+from app.hsh import hash_password
 fake = Faker()
-
 
 @click.command("seed")
 @click.option("--count", default=10, help="Number of todos to create. Default: 10")
@@ -34,21 +33,43 @@ def seed_command(count, clear, clean):
         click.echo("❌ Count must be positive.")
         return
 
+    # === Ensure groups exist ===
+    groups = UserGroup.query.all()
+    if not groups:
+        # Create demo groups
+        demo_groups = [
+            UserGroup(name="qa", description="Quality Assurance Team"),
+            UserGroup(name="frontend", description="Front-end Developers"),
+            UserGroup(name="backend", description="Back-end Developers"),
+            UserGroup(name="fullstack", description="Full-stack Developers"),
+            UserGroup(name="devops", description="DevOps Engineers"),
+            UserGroup(name="vibecoders", description="Vibe Coders Group"),
+        ]
+        db.session.add_all(demo_groups)
+        db.session.commit()
+        groups = demo_groups
+        click.echo("👥 Created 6 demo groups.")
+
     # === Ensure users exist ===
     users = User.query.all()
     if not users:
-        # Create 3 demo users
+        # Create 3 demo users with emails
         demo_users = [
-            User(username="demo1", password="demo1", is_admin=True),
-            User(username="demo2", password="demo2"),
-            User(username="demo3", password="demo3"),
+            User(username="admin", email="admin@example.com", password=hash_password("admin123"), is_admin=True),
+            User(username="alice", email="alice@example.com", password=hash_password("alice123")),
+            User(username="bob", email="bob@example.com", password=hash_password("bob12345")),
         ]
+        # Assign users to groups
+        for i, user in enumerate(demo_users):
+            user.groups.append(groups[i % len(groups)])  # Distribute among groups
+            if user.username == "admin":
+                user.groups.append(groups[-1])  # Admin in vibecoders too
+
         db.session.add_all(demo_users)
         db.session.commit()
         users = demo_users
-        click.echo("👤 Created 3 demo users (including 1 admin).")
+        click.echo("👤 Created 3 demo users with emails and group assignments.")
 
-    groups = UserGroup.query.all()
     admin_user = User.query.filter_by(is_admin=True).first()
     if not admin_user:
         admin_user = users[0]  # fallback

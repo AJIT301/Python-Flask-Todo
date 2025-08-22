@@ -3,6 +3,8 @@
 {% block title %}Dashboard - Todo App{% endblock %}
 
 {% block content %}
+{% block head %}{% endblock %}
+
 <div class="user_panel">
     <div class="user_nav">
         <div class="user_info">
@@ -52,7 +54,7 @@
     </ul>
 
     <form class="add-form" action="{{ url_for('routes.add') }}" method="POST">
-        <input type="text" id="todo-input" name="todo" placeholder="Add a new task..." required>
+        <input type="text" id="todo-input" name="todo" placeholder="Add a new task...">
         <div class="term-selection">
             <input type="checkbox" id="select-term-checkbox" name="has_date_range" onchange="toggleTermInputs()">
             <label for="select-term-checkbox">Select term</label>
@@ -66,13 +68,7 @@
         <button type="submit">Add Task</button>
     </form>
 </div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<div class="flash-message flash-{{ category }}">{{ message }}</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
+
 {% endblock %}
 
 {% block scripts %}

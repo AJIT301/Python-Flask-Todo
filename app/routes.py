@@ -16,11 +16,20 @@ from flask_login import (
 from app.models import User
 from werkzeug.security import check_password_hash  # if you hash passwords
 from .validation import validate_todo_input
+from .hsh import hash_password, verify_password
 from .sanitize_module import sanitize_input
 from datetime import datetime
-from .models import Todo, User
+from .models import Todo, User, UserGroup
 from . import db
 import logging
+from .validation import (
+    validate_username,
+    validate_email,
+    validate_password,
+    validate_group,
+    validate_captcha,
+)
+import random
 
 
 logger = logging.getLogger("InputSanitizer")
@@ -86,8 +95,9 @@ def login():
             else:
                 flash(f"⚠️ Please provide {missing[0]}.", "error")
         else:
+            # ✅ Fixed: Proper password verification
             user = User.query.filter_by(username=username).first()
-            if user and user.password == password:
+            if user and verify_password(password, user.password):
                 login_user(user)
                 flash("✅ Logged in successfully.", "success")
                 next_page = request.args.get("next")
@@ -115,28 +125,183 @@ def logout():
 
 
 # ---------------- REGISTER ----------------
+LAME_CAPTCHA_QUESTIONS = {
+    "What's the best programming language?": "python",
+    "What do you call a lazy developer?": "procrastinator",
+    "What's a developer's favorite food?": "pizza",
+    "Why do programmers prefer dark mode?": "eyes",
+    "What's the most popular JavaScript framework?": "react",
+    "What do you get when you cross a computer and a lifeguard?": "screensaver",
+    "Why do Java developers wear glasses?": "byte",
+    "What's a programmer's favorite hangout place?": "foo",
+    "What do you call 8 hobbits?": "hobbyte",
+    "Why did the programmer quit his job?": "noideabutitwasallnighters",
+    "What's the object-oriented way to become wealthy?": "inheritance",
+    "Why do programmers like to use the dark web?": "lessbugs",
+    "What's a developer's spirit animal?": "debugger",
+    "How many programmers does it take to change a light bulb?": "none",
+    "What's the most common programmer excuse?": "itworkslocally",
+}
+
+
+def get_random_captcha():
+    question = random.choice(list(LAME_CAPTCHA_QUESTIONS.keys()))
+    expected = LAME_CAPTCHA_QUESTIONS[question]
+    return question, expected
 
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        username = request.form.get("username").strip()
-        password = request.form.get("password").strip()
+    if request.method == "GET":
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
 
-        if not username:
-            flash("⚠️ Please provide a username.", "error")
-        elif not password:
-            flash("⚠️ Please provide a password.", "error")
-        elif User.query.filter_by(username=username).first():
-            flash("⚠️ Username already exists.", "error")
-        else:
-            new_user = User(username=username, password=password)
-            db.session.add(new_user)
-            db.session.commit()
-            flash("✅ Registration successful. You can log in now.", "success")
-            return redirect(url_for("routes.login"))
+    # Get form data
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "").strip()
+    group_name = request.form.get("group", "")
+    user_answer = request.form.get("captcha_answer", "").strip()
+    expected_answer = request.form.get("captcha_expected", "").strip()
 
-    return render_template("register.html")
+    # ✅ Sanitize ALL inputs
+    safe_username, username_score, username_matches = sanitize_input(username)
+    safe_email, email_score, email_matches = sanitize_input(email)
+    safe_password, password_score, password_matches = sanitize_input(password)
+    safe_group, group_score, group_matches = sanitize_input(group_name)
+    safe_captcha, captcha_score, captcha_matches = sanitize_input(user_answer)
+
+    # Check sanitization scores
+    if (
+        username_score >= 5
+        or email_score >= 5
+        or password_score >= 5
+        or group_score >= 5
+        or captcha_score >= 5
+    ):
+        flash("_blocked: suspicious content detected_", "error")
+        # Log the suspicious attempt
+        logger.warning(
+            f"Suspicious registration attempt blocked | User: {username} | Scores: U:{username_score} E:{email_score} P:{password_score} G:{group_score} C:{captcha_score}"
+        )
+        return redirect(url_for("routes.register"))
+
+    # Log flagged but not blocked content
+    if username_score >= 3:
+        logger.warning(
+            f"Flagged username input | Score={username_score} | Matches={username_matches} | User={username}"
+        )
+    if email_score >= 3:
+        logger.warning(
+            f"Flagged email input | Score={email_score} | Matches={email_matches} | Email={email}"
+        )
+    if password_score >= 3:
+        logger.warning(
+            f"Flagged password input | Score={password_score} | Matches={password_matches} | User={username}"
+        )
+    if group_score >= 3:
+        logger.warning(
+            f"Flagged group input | Score={group_score} | Matches={group_matches} | Group={group_name}"
+        )
+    if captcha_score >= 3:
+        logger.warning(
+            f"Flagged captcha input | Score={captcha_score} | Matches={captcha_matches} | Answer={user_answer}"
+        )
+
+    # Use sanitized inputs for validation
+    is_valid, message = validate_username(safe_username)
+    if not is_valid:
+        flash(f"⚠️ {message}", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    is_valid, message = validate_email(safe_email)
+    if not is_valid:
+        flash(f"⚠️ {message}", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    is_valid, message = validate_password(safe_password)
+    if not is_valid:
+        flash(f"⚠️ {message}", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    is_valid, message = validate_group(safe_group)
+    if not is_valid:
+        flash(f"⚠️ {message}", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    is_valid, message = validate_captcha(safe_captcha, expected_answer)
+    if not is_valid:
+        flash(f"⚠️ {message}", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    # Check existing user (using sanitized inputs)
+    if User.query.filter_by(username=safe_username).first():
+        flash("⚠️ Username already exists.", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    if User.query.filter_by(email=safe_email).first():
+        flash("⚠️ Email already registered.", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    # Find group
+    user_group = UserGroup.query.filter_by(name=safe_group).first()
+    if not user_group:
+        flash("⚠️ Invalid group selected.", "error")
+        captcha_question, captcha_expected = get_random_captcha()
+        return render_template(
+            "register.html",
+            captcha_question=captcha_question,
+            captcha_expected=captcha_expected,
+        )
+
+    # Create user with sanitized inputs
+    hashed_password = hash_password(safe_password)
+    new_user = User(username=safe_username, email=safe_email, password=hashed_password)
+    new_user.groups.append(user_group)
+
+    db.session.add(new_user)
+    db.session.commit()
+    flash("✅ Registration successful. You can log in now.", "success")
+    return redirect(url_for("routes.login"))
 
 
 # ---------------- DASHBOARD ----------------

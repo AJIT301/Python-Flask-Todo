@@ -1,0 +1,47 @@
+2025-08-22
+
+-Optimized flash system further (tested GPU usage spikes on RTX 2060).
+-Deferred CSS polish (conic gradients → experimental replacements later).
+-Backend planning shift → focus on per-user tasks + group-based tasks.
+-Registration improvements:
+-Added email field to User model.
+-Planned group <select> dropdown for signup.
+-Security & Validation:
+✅ Implemented bcrypt password hashing.
+✅ Added captcha (experimental, fun).
+✅ Integrated sanitization & validation for registration.
+✅ Fixed database structure.
+
+Seeder updates:
+✅ Added emails to demo users.
+✅ Created demo groups if missing.
+✅ Automatic user-group assignment.
+✅ Ensured admin user exists.
+✅ Distributed users to groups realistically.
+
+Dependencies:
+Installed bcrypt.
+
+Froze dependencies with pip freeze > requirements.txt.
+
+------------------------------------------------------------------
+
+✅ Progress Log – 21 Aug 2025
+
+Model inheritance: Refactored code to use inheritance in models.py for better structure.
+Bug fixes:
+Fixed todo date validation issue.
+Fixed empty date range bug.
+Fixed flash message duplication by implementing selective flash messages.
+New feature: Implemented basic user registration (username + password).
+
+------------------------------------------------------------------
+
+✅ Progress Log – 19-20 Aug 2025
+
+Implemented dashboard route to display tasks (with error handling).
+Decided not to complicate models with created_at timestamp for now.
+Built user panel (Jinja2) showing ID, username, email (with fallback values).
+Styled user panel with .user_nav, .user_data, and .text-bold.
+Positioned user info with username + Logout button.
+Implemented working logout functionality (/logout route).

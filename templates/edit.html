@@ -29,15 +29,7 @@
     </form>
 
     <a href="{{ url_for('routes.index') }}" class="cancel-link">Cancel</a>
-
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+</div>
 </div>
 {% endblock %}
 

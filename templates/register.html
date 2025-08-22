@@ -1,27 +1,46 @@
 {% extends "base.html" %}
-
 {% block title %}Register - Todo App{% endblock %}
-
+{% block head %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+{% endif %}
+{% endwith %}
+{% endblock %}
 {% block content %}
-<div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
+
 <div class="container login-container">
-    <h2>Register</h2>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" value="{{ request.form.username or '' }}">
-        <input type="password" name="password" placeholder="Password">
+    <h2>Register Account</h2>
+
+    <form method="POST" novalidate>
+        <input type="text" name="username" placeholder="Username" value="{{ request.form.username or '' }}" required
+            autocomplete="username">
+
+        <input type="email" name="email" placeholder="Email" value="{{ request.form.email or '' }}" required
+            autocomplete="email">
+
+        <input type="password" name="password" placeholder="Password" required autocomplete="new-password">
+
+        <select title="Group" name="group" required>
+            <option value="" disabled selected>Choose your group</option>
+            <option value="qa">QA</option>
+            <option value="frontend">Front-end</option>
+            <option value="backend">Back-end</option>
+            <option value="fullstack">Full-stack</option>
+            <option value="devops">DevOps</option>
+            <option value="vibecoders">Vibe-Coders</option>
+        </select>
+
+        <!-- Lame Captcha Section -->
+        <div class="lame-captcha">
+            <p class="captcha-question">Answer in 1 word: {{ captcha_question }}</p>
+            <input type="text" name="captcha_answer" placeholder="Your answer" required autocomplete="off">
+            <input type="hidden" name="captcha_expected" value="{{ captcha_expected }}">
+        </div>
+
         <button type="submit">Register</button>
     </form>
 
-    <p>Already have an account? <a href="{{ url_for('routes.login') }}" class="register-link">Login here</a></p>
-
-
+    <p>Already have an account?<a href="/login" class="register-link">Sign in</a></p>
 </div>
 {% endblock %}

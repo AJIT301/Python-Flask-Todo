@@ -4,17 +4,8 @@
 {% block title %}Welcome - Todo App{% endblock %}
 
 {% block content %}
-<!-- Flash Messages -->
 
-<!-- Flash Messages END -->
 <div class="admin-nav">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
     <a class="admin-panel" href="{{ url_for('routes.login') }}?admin=1">Admin area</a>
 </div>
 <div class="container index-container">
