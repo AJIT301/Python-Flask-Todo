@@ -3,12 +3,16 @@ from flask import Flask
 from dotenv import load_dotenv
 from .utils import format_datetime_british
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager  # <-- add this
+from flask_login import LoginManager
 from urllib.parse import quote_plus
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
+import logging
+
 load_dotenv()
 
 db = SQLAlchemy()
-login_manager = LoginManager()  # <-- add this
+login_manager = LoginManager()
 
 # Import models AFTER db is initialized
 from . import models
@@ -34,8 +38,21 @@ def create_app():
         f"postgresql://{user}:{encoded_password}@{host}:{port}/{database}"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    print(f"DB URI: postgresql://{user}:***@{host}:{port}/{database}")
+    # Use logger instead of print for better practice in production
+    app.logger.info(f"DB URI: postgresql://{user}:***@{host}:{port}/{database}")
     db.init_app(app)
+
+    # Check database connection
+    with app.app_context():
+        try:
+            # Use a simple query to check the connection
+            db.session.execute(text("SELECT 1"))
+            app.logger.info("✅ Database connection successful.")
+        except OperationalError as e:
+            app.logger.critical(f"❌ DATABASE CONNECTION FAILED: {e}")
+            # Raising an error here will be caught by the entry point (app.py)
+            # and prevent the app from starting with a clear message.
+            raise RuntimeError("Could not connect to the database.") from e
 
     # 🔑 Initialize login manager
     login_manager.init_app(app)
