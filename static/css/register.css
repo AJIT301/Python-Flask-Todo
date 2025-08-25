@@ -1,0 +1,170 @@
+
+.container.register-container a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+
+.container.register-container {
+    max-width: 350px;
+    width: 100%;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: whitesmoke;
+}
+
+.container.register-container h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 2rem;
+    color: #f0eaea;
+}
+
+.container.register-container form {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 25px;
+}
+
+.container.register-container input::placeholder {
+    color: #dee5e7;
+    opacity: 1;
+    /* optional: ensures full color */
+}
+
+.container.register-container input:focus::placeholder {
+    color: transparent;
+}
+
+.container.register-container input[type="text"],
+.container.register-container input[type="password"],
+.container.register-container input[type="email"] {
+    width: 100%;
+    /* ensures full width */
+
+    color: rgb(229, 235, 240);
+    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #cccccc54;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #2f46614f;
+}
+
+.container.register-container input[type="text"]:focus,
+.container.register-container input[type="password"]:focus,
+.container.register-container input[type="email"]:focus {
+    /* ← Add this too */
+    border-color: #94bae2;
+    box-shadow: 0 0 5px rgba(91, 138, 189, 0.5);
+}
+
+
+.container.register-container button {
+    padding: 12px 100px;
+    width: auto;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    background: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+    color: #fff;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.container.register-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.container.register-container button:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.container.register-container p {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.register-link {
+    color: #5adaff;
+    /* bright, visible color */
+    text-decoration: underline;
+    font-weight: 600;
+    margin-left: 5px;
+    /* space from the preceding text */
+    transition: color 0.2s;
+}
+
+.register-link:hover {
+    color: #3f9fd1;
+    /* slightly darker on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.container.register-container select {
+    width: 100%;
+    color: rgb(229, 235, 240);
+    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #cccccc54;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #2f46614f;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dee5e7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+.container.register-container select:focus {
+    border-color: #94bae2;
+    box-shadow: 0 0 5px rgba(91, 138, 189, 0.5);
+}
+
+
+.container.register-container select option {
+    background-color: #2f4661;
+    color: #e5ebf0;
+}
+
+
+.lame-captcha {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.captcha-question {
+    margin: 0;
+    font-size: 14px;
+    color: #f0eaea;
+    text-align: center;
+    font-weight: 600;
+}
+
+.container.register-container .lame-captcha input[type="text"] {
+    background-color: #3a5a7a4f;
+}
+
+/* --------Login.HTML END----------- */
+/* --------Login.HTML END----------- */

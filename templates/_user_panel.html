@@ -10,13 +10,13 @@
         <ul>
             <li><span class="text-bold">ID:</span> {{ current_user.id or 'Not found!' }}</li>
             <li><span class="text-bold">User:</span> {{ current_user.username or 'Not found!' }}</li>
-            <li><span class="text-bold">Role:</span>
-                {% if current_user.is_admin %}
-                Administrator
-                {% elif current_user.groups %}
-                {{ current_user.groups[0].name }} <!-- First group name -->
+            <li><span class="text-bold">Department:</span>
+                {% if current_user.groups %}
+                {% for group in current_user.groups %}
+                {{ get_group_display_name(group.name) }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
                 {% else %}
-                Regular User
+                No groups
                 {% endif %}
             </li>
             <li><span class="text-bold">Email:</span> {{ current_user.email or 'Not found!' }}</li>

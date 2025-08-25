@@ -13,6 +13,7 @@ from flask_login import (
     login_required,
     current_user,
 )
+from sqlalchemy import func  # for registration group name check.
 from app.models import User, Todo, UserGroup  # Import all models here once
 from werkzeug.security import check_password_hash
 from .validation import validate_todo_input
@@ -133,9 +134,23 @@ def admin_dashboard():
 
     # Admin sees ALL tasks
     todos = Todo.query.order_by(Todo.created_at.desc()).all()
-    return render_template("admin_dashboard.html", todos=todos)
+    return render_template(
+        "admin_dashboard.html",
+        todos=todos,
+        get_group_display_name=get_group_display_name,  # Add this line
+    )
 
-
+# In a utils module or at the top of your routes file
+def get_group_display_name(group_name):
+    GROUP_DISPLAY_NAMES = {
+        "frontend": "Front-End",
+        "backend": "Back-End", 
+        "fullstack": "FullStack",
+        "devops": "DevOps",
+        "qa": "QA",
+        "vibecoders": "Mighty VibeCoder"
+    }
+    return GROUP_DISPLAY_NAMES.get(group_name.lower(), group_name)
 # ---------------- DASHBOARD ----------------
 @bp.route("/dashboard")
 @login_required
@@ -157,8 +172,18 @@ def dashboard():
     except Exception as e:
         logger.error(f"Database error in dashboard: {e}")
         flash("Error loading tasks", "error")
-        return render_template("dashboard.html", todos=[], user=current_user)
-
+        return render_template(
+            "dashboard.html",
+            todos=todos,
+            user=current_user,
+            get_group_display_name=get_group_display_name,  # Pass function to template
+        )
+        
+@bp.context_processor
+def inject_helpers():
+    return {
+        'get_group_display_name': get_group_display_name
+    }
 
 @bp.route("/logout")
 @login_required
@@ -174,34 +199,53 @@ def logout():
 
 
 # ---------------- REGISTER ----------------
-LAME_CAPTCHA_QUESTIONS = {
-    "What language is known for whitespace indentation?": "python",
-    "What do you call a software mistake?": "bug",
-    "What's the opposite of push in Git?": "pull",
-    "What HTML tag creates a clickable link?": "anchor",
-    "What's the main branch often called in Git?": "master",
-    "What CSS property controls text color?": "color",
-    "What's the file extension for JavaScript?": "js",
-    "What keyword declares a variable in JavaScript?": "var",
-    "What's the popular NoSQL database starting with M?": "mongodb",
-    "What HTTP method retrieves data?": "get",
-    "What's the terminal command to list files?": "ls",
-    "What's React's main building block called?": "component",
-    "What does API stand for? (last word)": "interface",
-    "What's the Linux command to change directory?": "cd",
-    "What's the most popular version control system?": "git",
-    "What CSS framework uses utility classes?": "tailwind",
-    "What's the JavaScript runtime built on Chrome's V8?": "node",
-    "What database query language is widely used?": "sql",
-    "What's the CSS display property for flexible layouts?": "flex",
-    "What's the Python package manager called?": "pip",
-}
+# LAME_CAPTCHA_QUESTIONS = {
+#     "What language is known for whitespace indentation?": "python",
+#     "What do you call a software mistake?": "bug",
+#     "What's the opposite of push in Git?": "pull",
+#     "What HTML tag creates a clickable link?": "anchor",
+#     "What's the main branch often called in Git?": "master",
+#     "What CSS property controls text color?": "color",
+#     "What's the file extension for JavaScript?": "js",
+#     "What keyword declares a variable in JavaScript?": "var",
+#     "What's the popular NoSQL database starting with M?": "mongodb",
+#     "What HTTP method retrieves data?": "get",
+#     "What's the terminal command to list files?": "ls",
+#     "What's React's main building block called?": "component",
+#     "What does API stand for? (last word)": "interface",
+#     "What's the Linux command to change directory?": "cd",
+#     "What's the most popular version control system?": "git",
+#     "What CSS framework uses utility classes?": "tailwind",
+#     "What's the JavaScript runtime built on Chrome's V8?": "node",
+#     "What database query language is widely used?": "sql",
+#     "What's the CSS display property for flexible layouts?": "flex",
+#     "What's the Python package manager called?": "pip",
+# }
+LAME_CAPTCHA_QUESTIONS = {"1+1": "2"}
 
 
 def get_random_captcha():
     question = random.choice(list(LAME_CAPTCHA_QUESTIONS.keys()))
     expected = LAME_CAPTCHA_QUESTIONS[question]
     return question, expected
+
+
+
+
+
+@bp.route("/api/registration/groups")
+def get_registration_groups():
+    try:
+        # Only get active groups
+        groups = UserGroup.query.filter_by(is_active=True).all()
+        result = [
+            {"id": group.id, "name": group.name, "description": group.description}
+            for group in groups
+        ]
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error fetching groups: {e}")
+        return jsonify([]), 500
 
 
 @bp.route("/register", methods=["GET", "POST"])
@@ -213,7 +257,15 @@ def register():
             captcha_question=captcha_question,
             captcha_expected=captcha_expected,
         )
+    print(f"🚨 DEBUG REGISTRATION:")
+    print(f"   Form data: {dict(request.form)}")
+    group_from_form = request.form.get("group", "")
+    print(f"   Group from form: '{group_from_form}'")
+    print(f"   All DB groups: {[g.name for g in UserGroup.query.all()]}")
 
+    # Check if group exists
+    found_group = UserGroup.query.filter_by(name=group_from_form).first()
+    print(f"   Group lookup result: {found_group}")
     # Get form data
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip()
@@ -222,7 +274,7 @@ def register():
     user_answer = request.form.get("captcha_answer", "").strip()
     expected_answer = request.form.get("captcha_expected", "").strip()
 
-    # ✅ Sanitize ALL inputs
+    # Sanitize ALL inputs
     safe_username, username_score, username_matches = sanitize_input(username)
     safe_email, email_score, email_matches = sanitize_input(email)
     safe_password, password_score, password_matches = sanitize_input(password)
@@ -238,7 +290,6 @@ def register():
         or captcha_score >= 5
     ):
         flash("_blocked: suspicious content detected_", "error")
-        # Log the suspicious attempt
         logger.warning(
             f"Suspicious registration attempt blocked | User: {username} | Scores: U:{username_score} E:{email_score} P:{password_score} G:{group_score} C:{captcha_score}"
         )
@@ -266,7 +317,7 @@ def register():
             f"Flagged captcha input | Score={captcha_score} | Matches={captcha_matches} | Answer={user_answer}"
         )
 
-    # Use sanitized inputs for validation
+    # Validate inputs
     is_valid, message = validate_username(safe_username)
     if not is_valid:
         flash(f"⚠️ {message}", "error")
@@ -317,7 +368,7 @@ def register():
             captcha_expected=captcha_expected,
         )
 
-    # Check existing user (using sanitized inputs)
+    # Check existing users
     if User.query.filter_by(username=safe_username).first():
         flash("⚠️ Username already exists.", "error")
         captcha_question, captcha_expected = get_random_captcha()
@@ -336,8 +387,28 @@ def register():
             captcha_expected=captcha_expected,
         )
 
-    # Find group
-    user_group = UserGroup.query.filter_by(name=safe_group).first()
+    # Find group - EMERGENCY DEBUG
+    print(f"🔍 FORM SENT: '{group_name}'")
+    print(f"🔍 DB HAS: {[g.name for g in UserGroup.query.all()]}")
+
+    # Try EVERYTHING
+    user_group = None
+
+    # Try 1: Exact match
+    if group_name:
+        user_group = UserGroup.query.filter_by(name=group_name).first()
+        print(f"🔍 Exact match: {user_group}")
+
+    # Try 2: Lowercase
+    if not user_group and group_name:
+        user_group = UserGroup.query.filter_by(name=group_name.lower()).first()
+        print(f"🔍 Lowercase match: {user_group}")
+
+    # Try 3: Case insensitive
+    if not user_group and group_name:
+        user_group = UserGroup.query.filter(UserGroup.name.ilike(group_name)).first()
+        print(f"🔍 Case insensitive match: {user_group}")
+
     if not user_group:
         flash("⚠️ Invalid group selected.", "error")
         captcha_question, captcha_expected = get_random_captcha()
@@ -347,13 +418,14 @@ def register():
             captcha_expected=captcha_expected,
         )
 
-    # Create user with sanitized inputs
+    # Create user
     hashed_password = hash_password(safe_password)
     new_user = User(username=safe_username, email=safe_email, password=hashed_password)
     new_user.groups.append(user_group)
 
     db.session.add(new_user)
     db.session.commit()
+
     flash("✅ Registration successful. You can log in now.", "success")
     return redirect(url_for("routes.login"))
 

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Register - Todo App{% endblock %}
 {% block additional_styling %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 {% endblock %}
+
 {% block content %}
 
-<div class="container login-container">
+<div class="container register-container">
     <h2>Register Account</h2>
 
     <form method="POST" novalidate>
@@ -19,12 +20,9 @@
 
         <select title="Group" name="group" required>
             <option value="" disabled selected>Choose your group</option>
-            <option value="qa">QA</option>
-            <option value="frontend">Front-end</option>
-            <option value="backend">Back-end</option>
-            <option value="fullstack">Full-stack</option>
-            <option value="devops">DevOps</option>
-            <option value="vibecoders">Vibe-Coders</option>
+            {% for group in groups %}
+            <option value="{{ group.name }}">{{ group.name }}</option>
+            {% endfor %}
         </select>
 
         <!-- Lame Captcha Section -->
@@ -39,4 +37,37 @@
 
     <p>Already have an account?<a href="/login" class="register-link">Sign in</a></p>
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+    async function loadGroups() {
+        try {
+            console.log('Loading groups from API...');
+            const response = await fetch('/api/registration/groups');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const groups = await response.json();
+            console.log('Groups received:', groups);
+
+            const select = document.querySelector('select[name="group"]');
+            select.innerHTML = '<option value="" disabled selected>Choose your group</option>';
+
+            groups.forEach(group => {
+                const option = document.createElement('option');
+                // Use lowercase for value to match DB, but nice display name
+                option.value = group.name.toLowerCase();  // lowercase for DB match
+                option.textContent = group.description || group.name;  // nice display
+                console.log(`Adding option: value="${group.name.toLowerCase()}", text="${group.description}"`);
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Failed to load groups:', error);
+            const select = document.querySelector('select[name="group"]');
+            select.innerHTML = '<option value="" disabled>Error loading groups</option>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadGroups);
+</script>
 {% endblock %}

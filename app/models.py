@@ -49,7 +49,7 @@ class UserGroup(db.Model):
         db.String(50), unique=True, nullable=False
     )  # e.g., "backend-team", "frontend-team", "qa-team"
     description = db.Column(db.String(200), nullable=True)
-
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
     # Many-to-many: groups can have multiple users
     members = db.relationship(
         "User", secondary=user_group_members, back_populates="groups"

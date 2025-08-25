@@ -2,7 +2,7 @@
     position: absolute;
     left: 0;
     transition: all 0.3s ease;
-    width: 100%;
+    width: auto;
     /* Add smooth transition for all properties */
     margin-bottom: 10px;
     top: 10%;
@@ -12,7 +12,6 @@
     -webkit-backdrop-filter: blur(20px) saturate(1.2);
     backdrop-filter: blur(20px) saturate(1.2);
     color: white;
-    padding: 16px 24px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow:
@@ -24,7 +23,7 @@
     overflow: hidden;
     opacity: 0;
     transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    min-width: 200px;
+
     text-align: center;
     font-size: 14px;
     letter-spacing: 0.5px;
