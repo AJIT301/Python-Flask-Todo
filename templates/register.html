@@ -1,11 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Register - Todo App{% endblock %}
-{% block head %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
-{% endif %}
-{% endwith %}
+{% block additional_styling %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
 {% block content %}
 

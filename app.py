@@ -28,4 +28,4 @@ except Exception as e:
 
 if __name__ == "__main__":
     logging.info("Starting Flask development server...")
-    app.run(host="192.168.0.10", port=5000, debug=False)
+    app.run(host="192.168.0.10", port=5000, debug=True)

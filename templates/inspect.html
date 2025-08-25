@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}Inspect Task - Todo App{% endblock %}
-
+{% block additional_styling %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inspect.css') }}">
+{% endblock %}
 {% block content %}
 <div class="container inspect-container">
     <h1>Task Details</h1>

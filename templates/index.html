@@ -2,7 +2,9 @@
 {% extends "base.html" %}
 
 {% block title %}Welcome - Todo App{% endblock %}
-
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
 {% block content %}
 
 <div class="admin-nav">

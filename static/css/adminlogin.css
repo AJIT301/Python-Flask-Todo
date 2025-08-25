@@ -1,0 +1,56 @@
+
+/* --------Admin login.HTML START----------- */
+/* --------Admin login.HTML START----------- */
+
+.container.admin-dashboard {
+    border: 2px solid rgba(255, 0, 0, 0.3);
+    max-width: 800px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 25px;
+    border-radius: 8px;
+    display: block;
+}
+
+.container.admin-dashboard input[type="text"],
+.container.admin-dashboard input[type="password"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ;
+    max-width: 200px;
+    width: 100%;
+    color: rgb(229, 235, 240);
+    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #cccccc54;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+
+.container.admin-dashboard h2 {
+    color: #ff6b6b;
+}
+
+.container.login-container.admin input:focus {
+    border-color: #69e6ac;
+    box-shadow: 0 0 5px rgba(91, 189, 181, 0.5);
+}
+
+.admin-btn {
+    white-space: nowrap;
+    width: auto;
+    min-width: 120px;
+}
+
+.regular-login-redirect {
+    color: whitesmoke;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* --------Admin login.HTML END----------- */
+/* --------Admin login.HTML END----------- */

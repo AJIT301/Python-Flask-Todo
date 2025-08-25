@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}Todo App - Edit{% endblock %}
-
+{% block additional_styling %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit.css') }}">
+{% endblock %}
 {% block content %}
 <div class="container edit-container">
     <h1>Edit Todo</h1>

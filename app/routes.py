@@ -13,13 +13,12 @@ from flask_login import (
     login_required,
     current_user,
 )
-from app.models import User
-from werkzeug.security import check_password_hash  # if you hash passwords
+from app.models import User, Todo, UserGroup  # Import all models here once
+from werkzeug.security import check_password_hash
 from .validation import validate_todo_input
 from .hsh import hash_password, verify_password
 from .sanitize_module import sanitize_input
 from datetime import datetime
-from .models import Todo, User, UserGroup
 from . import db
 import logging
 from .validation import (
@@ -30,7 +29,6 @@ from .validation import (
     validate_captcha,
 )
 import random
-
 
 logger = logging.getLogger("InputSanitizer")
 logger.setLevel(logging.WARNING)
@@ -78,37 +76,88 @@ def index():
 # ---------------- LOGIN / LOGOUT ----------------
 @bp.route("/login", methods=["GET", "POST"])
 def login():
-    username = ""
+    is_admin_request = request.args.get("admin") == "1"
+
+    # Show admin login template for GET requests with admin=1
+    if is_admin_request and request.method == "GET":
+        return render_template("admin_login.html")
+
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
+        is_admin_login = request.form.get("admin") == "1"
 
-        missing = []
-        if not username:
-            missing.append("username")
-        if not password:
-            missing.append("password")
-
-        if missing:
-            if len(missing) == 2:
-                flash("⚠️ Please provide both username and password.", "error")
-            else:
-                flash(f"⚠️ Please provide {missing[0]}.", "error")
+        if not username or not password:
+            flash("⚠️ Please provide both username and password.", "error")
         else:
-            # ✅ Fixed: Proper password verification
             user = User.query.filter_by(username=username).first()
             if user and verify_password(password, user.password):
-                login_user(user)
-                flash("✅ Logged in successfully.", "success")
-                next_page = request.args.get("next")
-
-                # ✅ Ensure next_page is safe and not /login
-                if not next_page or next_page == url_for("routes.login"):
-                    next_page = url_for("routes.dashboard")
-                return redirect(next_page)
+                # Check admin login attempt first
+                if is_admin_login:
+                    if user.is_admin:
+                        login_user(user)
+                        flash("✅ Logged in successfully.", "success")
+                        return redirect(url_for("routes.admin_dashboard"))
+                    else:
+                        flash("❌ Access denied. ❌", "error")
+                        flash("Admin rights required.", "error")
+                        return render_template("admin_login.html")
+                else:
+                    # Regular login path
+                    login_user(user)
+                    flash("✅ Logged in successfully.", "success")
+                    if user.is_admin:
+                        return redirect(url_for("routes.admin_dashboard"))
+                    else:
+                        next_page = request.args.get("next")
+                        if not next_page or next_page == url_for("routes.login"):
+                            next_page = url_for("routes.dashboard")
+                        return redirect(next_page)
             else:
                 flash("❌ Invalid username or password.", "error")
-    return render_template("login.html", username=username)
+
+    # Show appropriate template based on admin flag
+    if is_admin_request:
+        return render_template("admin_login.html")
+    else:
+        return render_template("login.html")
+
+
+@bp.route("/admin/dashboard")
+@login_required
+def admin_dashboard():
+    print("Admin dashboard route called")  # Debug line
+    if not current_user.is_admin:
+        flash("Access denied.", "error")
+        return redirect(url_for("routes.dashboard"))
+
+    # Admin sees ALL tasks
+    todos = Todo.query.order_by(Todo.created_at.desc()).all()
+    return render_template("admin_dashboard.html", todos=todos)
+
+
+# ---------------- DASHBOARD ----------------
+@bp.route("/dashboard")
+@login_required
+def dashboard():
+    try:
+        # Regular users see only their assigned tasks
+        if current_user.is_admin:
+            # If admin somehow gets here, redirect to admin dashboard
+            return redirect(url_for("routes.admin_dashboard"))
+        # Get user's direct tasks
+        user_todos = Todo.query.filter_by(assigned_user_id=current_user.id)
+        # Get tasks from user's groups
+        group_todos = Todo.query.filter(
+            Todo.assigned_group_id.in_([group.id for group in current_user.groups])
+        )
+        # Combine and order all tasks
+        todos = user_todos.union(group_todos).order_by(Todo.created_at.desc()).all()
+        return render_template("dashboard.html", todos=todos, user=current_user)
+    except Exception as e:
+        logger.error(f"Database error in dashboard: {e}")
+        flash("Error loading tasks", "error")
+        return render_template("dashboard.html", todos=[], user=current_user)
 
 
 @bp.route("/logout")
@@ -118,7 +167,7 @@ def logout():
     flash("✅ Logged out successfully.", "success")
 
     # Always go to login page without next param
-    return redirect(url_for("routes.login"))
+    return redirect(url_for("routes.index"))
 
 
 # ---------------- LOGIN / LOGOUT END ----------------
@@ -126,21 +175,26 @@ def logout():
 
 # ---------------- REGISTER ----------------
 LAME_CAPTCHA_QUESTIONS = {
-    "What's the best programming language?": "python",
-    "What do you call a lazy developer?": "procrastinator",
-    "What's a developer's favorite food?": "pizza",
-    "Why do programmers prefer dark mode?": "eyes",
-    "What's the most popular JavaScript framework?": "react",
-    "What do you get when you cross a computer and a lifeguard?": "screensaver",
-    "Why do Java developers wear glasses?": "byte",
-    "What's a programmer's favorite hangout place?": "foo",
-    "What do you call 8 hobbits?": "hobbyte",
-    "Why did the programmer quit his job?": "noideabutitwasallnighters",
-    "What's the object-oriented way to become wealthy?": "inheritance",
-    "Why do programmers like to use the dark web?": "lessbugs",
-    "What's a developer's spirit animal?": "debugger",
-    "How many programmers does it take to change a light bulb?": "none",
-    "What's the most common programmer excuse?": "itworkslocally",
+    "What language is known for whitespace indentation?": "python",
+    "What do you call a software mistake?": "bug",
+    "What's the opposite of push in Git?": "pull",
+    "What HTML tag creates a clickable link?": "anchor",
+    "What's the main branch often called in Git?": "master",
+    "What CSS property controls text color?": "color",
+    "What's the file extension for JavaScript?": "js",
+    "What keyword declares a variable in JavaScript?": "var",
+    "What's the popular NoSQL database starting with M?": "mongodb",
+    "What HTTP method retrieves data?": "get",
+    "What's the terminal command to list files?": "ls",
+    "What's React's main building block called?": "component",
+    "What does API stand for? (last word)": "interface",
+    "What's the Linux command to change directory?": "cd",
+    "What's the most popular version control system?": "git",
+    "What CSS framework uses utility classes?": "tailwind",
+    "What's the JavaScript runtime built on Chrome's V8?": "node",
+    "What database query language is widely used?": "sql",
+    "What's the CSS display property for flexible layouts?": "flex",
+    "What's the Python package manager called?": "pip",
 }
 
 
@@ -302,24 +356,6 @@ def register():
     db.session.commit()
     flash("✅ Registration successful. You can log in now.", "success")
     return redirect(url_for("routes.login"))
-
-
-# ---------------- DASHBOARD ----------------
-@bp.route("/dashboard")
-@login_required
-def dashboard():
-    try:
-        # Query todos ordered by creation date (newest first)
-        todos_list = Todo.query.order_by(Todo.created_at.desc()).all()
-        return render_template(
-            "dashboard.html",
-            todos=todos_list,
-            user=current_user,  # 👈 pass user for Jinja2 panel
-        )
-    except Exception as e:
-        logger.error(f"Database error in dashboard: {e}")
-        flash("Error loading tasks", "error")
-        return render_template("dashboard.html", todos=[], user=current_user)
 
 
 ################################################################

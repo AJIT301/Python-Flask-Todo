@@ -54,6 +54,7 @@ def create_app():
             # and prevent the app from starting with a clear message.
             raise RuntimeError("Could not connect to the database.") from e
 
+
     # 🔑 Initialize login manager
     login_manager.init_app(app)
     login_manager.login_view = "routes.login"  # adjust blueprint/endpoint if needed

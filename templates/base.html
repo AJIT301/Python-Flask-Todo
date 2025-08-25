@@ -1,33 +1,33 @@
 <!DOCTYPE html>
-<html lang="UTF-8">
+<html lang="en">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
     <title>{% block title %}Todo App{% endblock %}</title>
 
     <!-- Main stylesheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
     <!-- Flash message stylesheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/flash.css') }}">
 
-    {% block head %}{% endblock %}
+    {% block additional_styling %}{% endblock %}
 </head>
 
 
 <body>
     <!-- Flash messages container -->
-    <div id="flash-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
         {% for category, message in messages %}
-        <div class="flash-message flash-{{ category }} show">
-            <span class="message-text">{{ message }}</span>
+        <div class="flash-message flash-{{ category }}">
+            <div class="message-text">{{ message }}</div>
         </div>
         {% endfor %}
-        {% endif %}
-        {% endwith %}
     </div>
+    {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
 
     {% block scripts %}{% endblock %}

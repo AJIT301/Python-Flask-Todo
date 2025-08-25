@@ -1,0 +1,29 @@
+<div class="user_panel">
+    <div class="user_nav">
+        <div class="user_info">
+            <span class="text-bold">Hi, {{ current_user.username or 'Guest' }}!</span>
+        </div>
+
+    </div>
+
+    <div class="user_data">
+        <ul>
+            <li><span class="text-bold">ID:</span> {{ current_user.id or 'Not found!' }}</li>
+            <li><span class="text-bold">User:</span> {{ current_user.username or 'Not found!' }}</li>
+            <li><span class="text-bold">Role:</span>
+                {% if current_user.is_admin %}
+                Administrator
+                {% elif current_user.groups %}
+                {{ current_user.groups[0].name }} <!-- First group name -->
+                {% else %}
+                Regular User
+                {% endif %}
+            </li>
+            <li><span class="text-bold">Email:</span> {{ current_user.email or 'Not found!' }}</li>
+        </ul>
+
+    </div>
+    <div class="user_data_logout">
+        <a href="{{ url_for('routes.logout') }}" class="button-login-logout">Logout</a>
+    </div>
+</div>

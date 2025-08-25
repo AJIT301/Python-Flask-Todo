@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - Todo App{% endblock %}
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container login-container admin">
+    <h2>Admin Login</h2>
+    <form method="POST">
+        <!-- Keep the admin parameter in URL, don't use name="admin" for username -->
+        <input type="hidden" name="admin" value="1">
+        <input type="text" name="username" placeholder="Admin Username" value="{{ username }}" autocomplete="username">
+        <input type="password" name="password" placeholder="Admin Password">
+        <button type="submit" class="login-container admin-btn">Login as Admin</button>
+    </form>
+    <p><a href="{{ url_for('routes.login') }}" class="regular-login-redirect">Regular User Login</a></p>
+</div>
+{% endblock %}

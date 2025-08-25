@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Todo App{% endblock %}
+{% block title %}Admin dashboard{% endblock %}
 
 {% block content %}
-{% block additional_styling %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% block head %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 {% endblock %}
 
 {% include '_user_panel.html' %}
+
 <div class="container dashboard-container">
     <h1>My To-Do List</h1>
 

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.dockerignore
 # Virtual environment folder
 venv/
 .env

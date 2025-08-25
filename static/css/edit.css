@@ -1,0 +1,45 @@
+/* --------Edit.HTML START----------- */
+/* --------Edit.HTML START----------- */
+
+
+.container .edit-container {
+    max-width: 500px;
+    width: 100%;
+    margin: auto;
+
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form {
+    display: flex;
+    margin-top: 20px;
+}
+
+.edit-form input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.edit-form button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.cancel-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #6c757d;
+}
+
+/* --------Edit.HTML END----------- */
+/* --------Edit.HTML END----------- */

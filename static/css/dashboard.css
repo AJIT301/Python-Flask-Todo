@@ -1,0 +1,182 @@
+/* --------Dashboard.HTML START----------- */
+/* --------Dashboard.HTML START----------- */
+
+.container.dashboard-container {
+
+    max-width: 800px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 25px;
+    border-radius: 8px;
+    display: block;
+}
+
+.container.dashboard-container h1 {
+    text-align: center;
+    font-size: 2rem;
+
+}
+
+.container.dashboard-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.container.dashboard-container li {
+    padding: 12px 8px;
+    border-bottom: 1px solid #857d7d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.user_panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 15px 20px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    color: #f1f1f1;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: visible;
+}
+
+.user_nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.user_info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user_data ul {
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.user_data li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Optional: buttons inside panel */
+.user_panel .button-login-logout {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    background-image: radial-gradient(ellipse at top left, #0fa18e, #3f4144);
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    text-decoration: none;
+}
+
+.user_panel .button-login-logout:hover {
+    transform: scale(1.05);
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.user_data_logout {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+}
+.user_data_logout {
+    margin-left: auto;
+}
+.text-bold {
+    font-weight: 700;
+    margin-right: 0.3rem;
+}
+
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.todo-item span {
+    min-width: 150px;
+    word-break: break-word;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+.incomplete {
+    text-decoration: #007bff;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.actions a {
+    color: #e9f1f8;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.actions a:hover {
+    text-decoration: underline;
+}
+
+.add-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.add-form input[type="text"] {
+    flex: 1 1 auto;
+    min-width: 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.add-form button {
+    flex: 0 0 auto;
+    padding: 10px 15px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.display {
+    display: none;
+}
+
+/* --------Dashboard.HTML END----------- */
+/* --------Dashboard.HTML END----------- */

@@ -2,7 +2,8 @@
 
 {% block title %}Login panel - Todo App{% endblock %}
 
-{% block head %}
+{% block additional_styling %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
 {% block content %}
