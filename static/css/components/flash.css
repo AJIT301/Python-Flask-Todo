@@ -2,7 +2,8 @@
     position: absolute;
     left: 0;
     transition: all 0.3s ease;
-    width: auto;
+    width: 300px;
+    padding: 10px 20px;
     /* Add smooth transition for all properties */
     margin-bottom: 10px;
     top: 10%;
