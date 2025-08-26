@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Deadline - Admin Dashboard{% endblock %}
+
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+{% include 'admin/_admin_nav.html' %}
+<div class="container dashboard-container">
+    <section class="edit-deadline-section">
+        <h1>Edit Deadline</h1>
+
+        <form method="POST" class="deadline-form">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <input type="text" id="title" name="title" value="{{ deadline.title }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4">{{ deadline.description or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline_date">Deadline Date *</label>
+                <input type="datetime-local" id="deadline_date" name="deadline_date"
+                    value="{{ deadline.deadline_date.strftime('%Y-%m-%dT%H:%M') }}" required>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="is_active" name="is_active" {% if deadline.is_active %}checked{% endif %}>
+                <label for="is_active">Make this deadline active</label>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('admin.manage_deadlines') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Deadline</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add any deadline edit scripts here
+    document.addEventListener('DOMContentLoaded', function () {
+        // Form validation or other enhancements can go here
+    });
+</script>
+{% endblock %}

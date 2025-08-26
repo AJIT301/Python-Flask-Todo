@@ -1,0 +1,203 @@
+/* static/css/admin_nav.css - FIXED VERSION */
+
+/* Wrapper for sticky positioning and centering */
+.dashboard-nav-wrapper {
+    position: sticky;
+    top: 1rem;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    transition: none; /* Remove transition for immediate movement */
+    transform: translateY(0);
+    opacity: 1;
+    will-change: transform; /* Optimize for transform animations */
+}
+
+/* The actual navigation bar */
+.dashboard-nav {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 1160px;
+    /* Add this to ensure proper alignment */
+    display: flex;
+    justify-content: center;
+}
+
+.dashboard-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard-nav li {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    background: transparent;
+    color: #e9f1f8;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    min-height: 44px;
+}
+
+.dashboard-nav a:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    z-index: -1;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+}
+
+.dashboard-nav a:hover {
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.dashboard-nav a:hover:before {
+    opacity: 1;
+}
+
+.dashboard-nav a:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Active state for current page */
+.dashboard-nav a.active {
+    background: rgba(102, 126, 234, 0.15);
+    border-color: rgba(102, 126, 234, 0.5);
+    color: #667eea;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+}
+
+.dashboard-nav a.active:before {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+}
+
+/* Focus state for accessibility */
+.dashboard-nav a:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .dashboard-nav-wrapper {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .dashboard-nav-wrapper {
+        padding: 0 1rem;
+        top: 0.8rem;
+    }
+
+    .dashboard-nav {
+        padding: 1rem;
+    }
+
+    .dashboard-nav a {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-nav-wrapper {
+        padding: 0 0.8rem;
+        top: 0.6rem;
+    }
+
+    .dashboard-nav {
+        padding: 0.8rem;
+        border-radius: 10px;
+    }
+
+    .dashboard-nav ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .dashboard-nav a {
+        padding: 10px 16px;
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-nav-wrapper {
+        padding: 0 0.6rem;
+        top: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-nav {
+        padding: 0.6rem;
+        border-radius: 8px;
+    }
+
+    .dashboard-nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .dashboard-nav a {
+        width: 100%;
+        min-width: auto;
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .dashboard-nav {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-nav a {
+        color: #f1f1f1;
+    }
+}

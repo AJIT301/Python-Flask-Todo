@@ -1,3 +1,4 @@
+# app/__init__.py
 import os
 from flask import Flask
 from dotenv import load_dotenv
@@ -13,9 +14,6 @@ load_dotenv()
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-
-# Import models AFTER db is initialized
-from . import models
 
 
 def create_app():
@@ -38,38 +36,40 @@ def create_app():
         f"postgresql://{user}:{encoded_password}@{host}:{port}/{database}"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    # Use logger instead of print for better practice in production
     app.logger.info(f"DB URI: postgresql://{user}:***@{host}:{port}/{database}")
     db.init_app(app)
 
     # Check database connection
     with app.app_context():
         try:
-            # Use a simple query to check the connection
             db.session.execute(text("SELECT 1"))
             app.logger.info("✅ Database connection successful.")
         except OperationalError as e:
             app.logger.critical(f"❌ DATABASE CONNECTION FAILED: {e}")
-            # Raising an error here will be caught by the entry point (app.py)
-            # and prevent the app from starting with a clear message.
             raise RuntimeError("Could not connect to the database.") from e
-
 
     # 🔑 Initialize login manager
     login_manager.init_app(app)
-    login_manager.login_view = "routes.login"  # adjust blueprint/endpoint if needed
+    login_manager.login_view = "routes.login"
 
     @login_manager.user_loader
     def load_user(user_id):
-        return models.User.query.get(int(user_id))
+        from .models import User
+
+        return User.query.get(int(user_id))
 
     # Register Jinja filter
     app.jinja_env.filters["datetime_british"] = format_datetime_british
 
-    # Blueprints
-    from . import routes
+    # Register blueprints
+    from .routes.main import bp as main_bp
+    from .routes.admin import admin_bp
 
-    app.register_blueprint(routes.bp)
+    app.register_blueprint(main_bp)
+    app.register_blueprint(admin_bp)
+
+    # Import models AFTER db is initialized
+    from . import models
 
     from . import error_handlers
 

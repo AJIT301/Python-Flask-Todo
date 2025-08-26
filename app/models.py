@@ -33,10 +33,11 @@ class User(UserMixin, db.Model):
     )
     # One-to-many: todos created by this user
     created_todos = db.relationship(
-        "Todo",
-        foreign_keys="Todo.created_by_id",
-        back_populates="created_by"
+        "Todo", foreign_keys="Todo.created_by_id", back_populates="created_by"
     )
+    # One-to-many: deadlines created by this user
+    created_deadlines = db.relationship("Deadline", back_populates="created_by")
+
     def __repr__(self):
         return f"<User {self.username}>"
 
@@ -98,9 +99,7 @@ class Todo(db.Model):
         "UserGroup", back_populates="assigned_todos", foreign_keys=[assigned_group_id]
     )
     created_by = db.relationship(
-        "User",
-        foreign_keys=[created_by_id],
-        back_populates="created_todos"
+        "User", foreign_keys=[created_by_id], back_populates="created_todos"
     )
 
     def to_dict(self):
@@ -139,3 +138,42 @@ class Todo(db.Model):
 
     def __repr__(self):
         return f"<Todo {self.task[:30]} -> {self.assignee_name}>"
+
+
+# In app/models.py - update your Deadline model
+class Deadline(db.Model):
+    __tablename__ = "deadlines"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    deadline_date = db.Column(db.DateTime, nullable=False)
+    is_active = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Foreign key to track who created the deadline
+    created_by_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+
+    # Relationship
+    created_by = db.relationship("User", back_populates="created_deadlines")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "deadline_date": (
+                self.deadline_date.isoformat() if self.deadline_date else None
+            ),
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "created_by": self.created_by.username if self.created_by else None,
+        }
+
+    def __repr__(self):
+        status = "ACTIVE" if self.is_active else "INACTIVE"
+        return f"<Deadline {self.title} - {status}>"

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}All Users - Admin Dashboard{% endblock %}
+
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+{% include 'admin/_admin_nav.html' %}
+<div class="container dashboard-container">
+    <section class="users-section">
+        <h1>All Users</h1>
+        <div class="users-stats">
+            <p>Total Users: <strong>{{ users|length }}</strong></p>
+            <p>Active Users: <strong>{{ users|length }}</strong></p>
+            <p>Inactive Users: <strong>{{ users|length }}</strong></p>
+        </div>
+
+        <div class="users-table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Groups</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="{% if user.is_admin %}admin-user{% endif %}">
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.groups %}
+                            {% for group in user.groups %}
+                            <span class="user-group-badge">{{ get_group_display_name(group.name) }}</span>
+                            {% endfor %}
+                            {% else %}
+                            <span class="no-group">No groups</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_admin %}
+                            <span class="role-admin">Admin</span>
+                            {% else %}
+                            <span class="role-user">User</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

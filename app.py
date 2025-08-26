@@ -1,5 +1,4 @@
-from app import create_app, db
-from sqlalchemy import text
+from app import create_app
 import sys
 import logging
 

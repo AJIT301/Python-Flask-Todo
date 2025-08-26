@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+
+{% endblock %}
+
+{% block content %}
+<!-- Admin Navigation - OUTSIDE the container -->
+{% include 'admin/_admin_nav.html' %}
+
+<div class="container dashboard-container">
+    <!-- To-Do List Section -->
+    <section class="todo-section">
+        <h1>My To-Do List</h1>
+
+        <ul>
+            {% for todo in todos %}
+            <li>
+                <div class="todo-item">
+                    <form action="{{ url_for('routes.toggle_todo', todo_id=todo.id) }}" method="POST">
+                        <input title="Mark as done" type="checkbox" name="done" {% if todo.done %}checked{% endif %}
+                            onchange="this.form.submit()">
+                    </form>
+                    <span class="{% if todo.done %}completed{% else %}incomplete{% endif %}">{{ todo.task }}</span>
+                </div>
+                {% if todo.date_from and todo.date_to %}
+                <div class="todo-dates">
+                    <small>From: {{ todo.date_from|datetime_british }} To: {{ todo.date_to|datetime_british }}</small>
+                </div>
+                {% endif %}
+                <div class="actions">
+                    <a href="{{ url_for('routes.edit', todo_id=todo.id) }}">Edit</a>
+                    <form action="{{ url_for('routes.delete', todo_id=todo.id) }}" method="POST">
+                        <a href="javascript:void(0)"
+                            onclick="if(confirm('Are you sure?')) this.parentNode.submit()">Delete</a>
+                    </form>
+                    <a href="{{ url_for('routes.inspect', todo_id=todo.id) }}">Inspect</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+
+
+    </section>
+</div>
+
+<!-- Add some bottom padding to ensure scrolling works -->
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

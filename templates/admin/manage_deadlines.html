@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Deadlines - Admin Dashboard{% endblock %}
+
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+{% include 'admin/_admin_nav.html' %}
+<div class="container dashboard-container">
+    <section class="deadlines-section">
+        <div class="section-header">
+            <h1>Manage Deadlines</h1>
+            <a href="{{ url_for('admin.create_deadline') }}" class="btn btn-primary">
+                + Create New Deadline
+            </a>
+        </div>
+
+        <div class="deadlines-stats">
+            <div class="stat-card">
+                <h3>Total Deadlines</h3>
+                <span class="stat-number">{{ deadlines|length }}</span>
+            </div>
+            <div class="stat-card">
+                <h3>Active Deadlines</h3>
+                <span class="stat-number">{{ deadlines|selectattr('is_active')|list|length }}</span>
+            </div>
+        </div>
+
+        {% if deadlines %}
+        <div class="deadlines-table-container">
+            <table class="deadlines-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Deadline Date</th>
+                        <th>Status</th>
+                        <th>Created By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deadline in deadlines %}
+                    <tr class="{% if deadline.is_active %}active-deadline{% endif %}">
+                        <td class="deadline-title">{{ deadline.title }}</td>
+                        <td class="deadline-description">
+                            {% if deadline.description %}
+                            {{ deadline.description[:50] }}{% if deadline.description|length > 50 %}...{% endif %}
+                            {% else %}
+                            <span class="no-description">No description</span>
+                            {% endif %}
+                        </td>
+                        <td class="deadline-date">
+                            {{ deadline.deadline_date|datetime_british }}
+                        </td>
+                        <td class="deadline-status">
+                            {% if deadline.is_active %}
+                            <span class="status-badge status-active">Active</span>
+                            {% else %}
+                            <span class="status-badge status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="deadline-creator">
+                            {% if deadline.created_by %}
+                            {{ deadline.created_by.username }}
+                            {% else %}
+                            System
+                            {% endif %}
+                        </td>
+                        <td class="deadline-actions">
+                            <form action="{{ url_for('admin.toggle_deadline', deadline_id=deadline.id) }}" method="POST"
+                                style="display: inline;">
+                                <button type="submit"
+                                    class="btn btn-sm {% if deadline.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                                    {% if deadline.is_active %}Deactivate{% else %}Activate{% endif %}
+                                </button>
+                            </form>
+                            <a href="{{ url_for('admin.edit_deadline', deadline_id=deadline.id) }}"
+                                class="btn btn-sm btn-secondary" title="Edit">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-deadlines">
+            <h3>No deadlines found</h3>
+            <p>Create your first deadline to get started.</p>
+            <a href="{{ url_for('admin.create_deadline') }}" class="btn btn-primary">
+                Create Deadline
+            </a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add any deadline management scripts here
+    document.addEventListener('DOMContentLoaded', function () {
+        // Confirm before toggling deadlines
+        const toggleForms = document.querySelectorAll('form[action*="toggle"]');
+        toggleForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const button = form.querySelector('button');
+                const action = button.textContent.trim();
+                if (!confirm(`Are you sure you want to ${action.toLowerCase()} this deadline?`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

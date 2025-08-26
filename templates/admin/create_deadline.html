@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Create Deadline - Admin Dashboard{% endblock %}
+
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+{% include 'admin/_admin_nav.html' %}
+<div class="container dashboard-container">
+    <section class="create-deadline-section">
+        <h1>Create New Deadline</h1>
+
+        <form method="POST" class="deadline-form">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline_date">Deadline Date *</label>
+                <input type="datetime-local" id="deadline_date" name="deadline_date" required>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="is_active" name="is_active">
+                <label for="is_active">Make this deadline active immediately</label>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('admin.manage_deadlines') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Deadline</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set default deadline date to tomorrow
+    document.addEventListener('DOMContentLoaded', function () {
+        const deadlineInput = document.getElementById('deadline_date');
+        if (deadlineInput && !deadlineInput.value) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(17, 0, 0, 0); // 5:00 PM
+
+            // Format for datetime-local input
+            const year = tomorrow.getFullYear();
+            const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const day = String(tomorrow.getDate()).padStart(2, '0');
+            const hours = String(tomorrow.getHours()).padStart(2, '0');
+            const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+
+            deadlineInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+    });
+</script>
+{% endblock %}

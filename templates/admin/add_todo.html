@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Add Todo - Admin Dashboard{% endblock %}
+
+{% block additional_styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+{% include 'admin/_admin_nav.html' %}
+<div class="container dashboard-container">
+    <section class="add-todo-section">
+        <h1>Add New Task</h1>
+
+        <form method="POST" class="add-form">
+            <div class="form-group">
+                <label for="todo">Task Description *</label>
+                <input type="text" id="todo" name="todo" placeholder="Enter task description..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="assigned_user">Assign to User</label>
+                <select id="assigned_user" name="assigned_user">
+                    <option value="">-- Select User --</option>
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="assigned_group">Assign to Group</label>
+                <select id="assigned_group" name="assigned_group">
+                    <option value="">-- Select Group --</option>
+                    {% for group in groups %}
+                    <option value="{{ group.id }}">{{ get_group_display_name(group.name) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="term-selection">
+                <input type="checkbox" id="select-term-checkbox" name="has_date_range" onchange="toggleTermInputs()">
+                <label for="select-term-checkbox">Select term</label>
+            </div>
+
+            <div id="term-inputs" style="display:none;">
+                <div class="form-group">
+                    <label for="date-from">From:</label>
+                    <input type="datetime-local" id="date-from" name="date_from">
+                </div>
+                <div class="form-group">
+                    <label for="date-to">To:</label>
+                    <input type="datetime-local" id="date-to" name="date_to">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Task</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleTermInputs() {
+        var checkbox = document.getElementById('select-term-checkbox');
+        var termInputs = document.getElementById('term-inputs');
+        termInputs.style.display = checkbox.checked ? 'block' : 'none';
+    }
+</script>
+{% endblock %}

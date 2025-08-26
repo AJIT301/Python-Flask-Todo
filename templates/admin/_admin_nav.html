@@ -1,0 +1,107 @@
+<!-- templates/admin/_admin_nav.html -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_nav.css') }}">
+<div class="dashboard-nav-wrapper">
+    <nav class="dashboard-nav">
+        <ul>
+            <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('admin.show_all_users') }}">Show All Users</a></li>
+            <li><a href="{{ url_for('admin.users_by_group') }}">Show Users by Group</a></li>
+            <li><a href="{{ url_for('admin.manage_deadlines') }}">Manage Deadlines</a></li>
+            <li><a href="{{ url_for('admin.add_todo') }}">Add Task</a></li>
+        </ul>
+    </nav>
+</div>
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navWrapper = document.querySelector('.dashboard-nav-wrapper');
+        let lastScrollY = window.scrollY;
+        let scrollDirection = '';
+
+        if (navWrapper) {
+            let ticking = false;
+
+            function updateNav() {
+                const currentScrollY = window.scrollY;
+
+                // Simple show/hide based on scroll direction
+                if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                    // Scrolling down - hide nav
+                    navWrapper.style.transform = 'translateY(-100px)';
+                    navWrapper.style.opacity = '0.5';
+                } else if (currentScrollY < lastScrollY) {
+                    // Scrolling up - show nav with bounce
+                    navWrapper.style.transform = 'translateY(0)';
+                    navWrapper.style.opacity = '1';
+
+                    // Add bounce effect
+                    navWrapper.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    navWrapper.style.transform = 'translateY(-10px)';
+
+                    setTimeout(() => {
+                        navWrapper.style.transform = 'translateY(0)';
+                    }, 100);
+                }
+
+                // Reset transition for normal scrolling
+                if (Math.abs(currentScrollY - lastScrollY) > 5) {
+                    navWrapper.style.transition = 'all 0.3s ease';
+                }
+
+                lastScrollY = currentScrollY;
+                ticking = false;
+            }
+
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(updateNav);
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', requestTick);
+        }
+    });
+</script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navWrapper = document.querySelector('.dashboard-nav-wrapper');
+        let lastScrollY = window.scrollY;
+        let scrollTimer = null;
+
+        if (navWrapper) {
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
+                const scrollDelta = currentScrollY - lastScrollY;
+
+                // More sensitive detection
+                if (Math.abs(scrollDelta) > 1) { // Reduced from 2 to 1
+                    // Immediate sharp displacement
+                    navWrapper.style.transition = 'none';
+
+                    //Sharper displacement calculation
+                    const displacement = Math.min(Math.abs(scrollDelta) * 5.0, 50); // Increased multiplier and max
+
+                    if (scrollDelta > 0) {
+                        // Scrolling down - sharper push up
+                        navWrapper.style.transform = `translateY(${-displacement}px)`;
+                    } else {
+                        // Scrolling up - sharper push down
+                        navWrapper.style.transform = `translateY(${displacement}px)`;
+                    }
+
+                    // Faster bounce back
+                    clearTimeout(scrollTimer);
+                    scrollTimer = setTimeout(() => {
+                        navWrapper.style.transition = 'transform 0.3s cubic-bezier(0.3, -0.8, 0.3, 1.8)'; // Sharper easing
+                        navWrapper.style.transform = 'translateY(0)';
+                    }, 100); // Reduced delay from 30 to 10ms
+                }
+
+                lastScrollY = currentScrollY;
+            }
+
+            window.addEventListener('scroll', handleScroll, { passive: true });
+        }
+    });
+</script>
