@@ -89,47 +89,7 @@ def index():
     return render_template("index.html")
 
 
-# ---------------- LOGIN / LOGOUT ----------------
-@bp.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "GET":
-        return render_template("login.html")
 
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-
-        if not username or not password:
-            flash("⚠️ Please provide both username and password.", "error")
-            return render_template("login.html")
-
-        user = User.query.filter_by(username=username).first()
-        if user and verify_password(password, user.password):
-            login_user(user)
-            flash("✅ Logged in successfully.", "success")
-
-            # Redirect based on user type
-            if user.is_admin:
-                return redirect(url_for("admin.dashboard"))
-            else:
-                next_page = request.args.get("next")
-                if not next_page or next_page == url_for("routes.login"):
-                    next_page = url_for("routes.dashboard")
-                return redirect(next_page)
-        else:
-            flash("❌ Invalid username or password.", "error")
-            return render_template("login.html")
-
-
-@bp.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    flash("✅ Logged out successfully.", "success")
-    return redirect(url_for("routes.index"))
-
-
-# ---------------- DASHBOARD ----------------
 @bp.route("/dashboard")
 @login_required
 def dashboard():
@@ -364,7 +324,7 @@ def register():
     db.session.commit()
 
     flash("✅ Registration successful. You can log in now.", "success")
-    return redirect(url_for("routes.login"))
+    return redirect(url_for("auth.login"))
 
 
 # ---------------- TODO ROUTES ----------------
@@ -632,3 +592,5 @@ def bulk_delete():
         db.session.rollback()
         logger.error(f"Database error in bulk delete: {e}")
         return jsonify({"error": "Error deleting todos"}), 500
+
+

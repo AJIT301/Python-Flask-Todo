@@ -1,4 +1,5 @@
 # routes/admin.py
+import time
 from flask import (
     Blueprint,
     render_template,
@@ -20,6 +21,11 @@ from app.security.sanitize_module import sanitize_input
 from datetime import datetime
 from app import db
 import logging
+from app.routes.auth import (
+    active_user_sessions,
+    cleanup_expired_sessions,
+    user_last_activity,
+)
 
 # Configuration
 MAX_TODOS = 1000
@@ -43,7 +49,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             flash("Please log in to continue.", "error")
-            return redirect(url_for("routes.login"))
+            return redirect(url_for("auth.login"))
         if not current_user.is_admin:
             flash("Access denied. Admins only.", "error")
             return redirect(url_for("routes.dashboard"))
@@ -102,8 +108,89 @@ def dashboard():
 @login_required
 @admin_required
 def show_all_users():
-    users = User.query.all()
-    return render_template("admin/users_all.html", users=users)
+    import time
+
+    # Clean up very old entries (1 hour+)
+    cleanup_expired_sessions(timeout_seconds=3600)
+
+    # Sort users: admins first, then by ID
+    users = User.query.order_by(User.is_admin.desc(), User.id.asc()).all()
+    total_users = len(users)
+    current_time = time.time()
+
+    user_statuses = {}
+    user_last_seen = {}
+
+    # Clean active_user_sessions - remove users inactive for 1+ minutes
+    users_to_remove_from_active = []
+    for user_id in list(active_user_sessions):
+        if user_id in user_last_activity:
+            time_diff = current_time - user_last_activity[user_id]
+            if time_diff > 60:  # 1 minute - remove from active sessions
+                users_to_remove_from_active.append(user_id)
+
+    for user_id in users_to_remove_from_active:
+        active_user_sessions.discard(user_id)
+
+    # Calculate statuses with production timeouts
+    for user in users:
+        user_id = user.id
+
+        if user_id in user_last_activity:
+            time_diff = current_time - user_last_activity[user_id]
+            is_currently_active = user_id in active_user_sessions
+
+            if is_currently_active and time_diff <= 60:
+                # Currently sending heartbeats (within 1 minute) - Online
+                user_statuses[user_id] = "online"
+                user_last_seen[user_id] = "now"
+            elif time_diff <= 60:
+                # Very recent activity (within 1 minute) - Online
+                user_statuses[user_id] = "online"
+                user_last_seen[user_id] = "now"
+            elif time_diff <= 300:  # 5 minutes
+                # Recent but not current (1-5 minutes) - Away
+                user_statuses[user_id] = "away"
+                user_last_seen[user_id] = format_time_ago(time_diff)
+            else:
+                # Longer ago (5+ minutes) - Offline
+                user_statuses[user_id] = "offline"
+                user_last_seen[user_id] = format_time_ago(time_diff)
+        else:
+            # Never active
+            user_statuses[user_id] = "offline"
+            user_last_seen[user_id] = "never"
+
+    # Calculate counts
+    currently_online = sum(1 for status in user_statuses.values() if status == "online")
+    currently_away = sum(1 for status in user_statuses.values() if status == "away")
+    currently_offline = sum(
+        1 for status in user_statuses.values() if status == "offline"
+    )
+
+    return render_template(
+        "admin/users_all.html",
+        users=users,
+        user_statuses=user_statuses,
+        user_last_seen=user_last_seen,
+        active_users_count=currently_online,
+        away_users_count=currently_away,  # Add this if you want to show away count
+        logged_out_users_count=currently_offline,
+        total_users=total_users,
+    )
+
+
+# Add this helper function
+def format_time_ago(seconds):
+    """Convert seconds to human readable time ago format"""
+    if seconds < 60:
+        return f"{int(seconds)} seconds ago"
+    elif seconds < 3600:
+        return f"{int(seconds/60)} minutes ago"
+    elif seconds < 86400:
+        return f"{int(seconds/3600)} hours ago"
+    else:
+        return f"{int(seconds/86400)} days ago"
 
 
 @admin_bp.route("/users/groups")

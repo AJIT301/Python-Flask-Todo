@@ -12,57 +12,7 @@
     </nav>
 </div>
 
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const navWrapper = document.querySelector('.dashboard-nav-wrapper');
-        let lastScrollY = window.scrollY;
-        let scrollDirection = '';
 
-        if (navWrapper) {
-            let ticking = false;
-
-            function updateNav() {
-                const currentScrollY = window.scrollY;
-
-                // Simple show/hide based on scroll direction
-                if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                    // Scrolling down - hide nav
-                    navWrapper.style.transform = 'translateY(-100px)';
-                    navWrapper.style.opacity = '0.5';
-                } else if (currentScrollY < lastScrollY) {
-                    // Scrolling up - show nav with bounce
-                    navWrapper.style.transform = 'translateY(0)';
-                    navWrapper.style.opacity = '1';
-
-                    // Add bounce effect
-                    navWrapper.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-                    navWrapper.style.transform = 'translateY(-10px)';
-
-                    setTimeout(() => {
-                        navWrapper.style.transform = 'translateY(0)';
-                    }, 100);
-                }
-
-                // Reset transition for normal scrolling
-                if (Math.abs(currentScrollY - lastScrollY) > 5) {
-                    navWrapper.style.transition = 'all 0.3s ease';
-                }
-
-                lastScrollY = currentScrollY;
-                ticking = false;
-            }
-
-            function requestTick() {
-                if (!ticking) {
-                    requestAnimationFrame(updateNav);
-                    ticking = true;
-                }
-            }
-
-            window.addEventListener('scroll', requestTick);
-        }
-    });
-</script> -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const navWrapper = document.querySelector('.dashboard-nav-wrapper');

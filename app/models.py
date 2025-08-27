@@ -1,7 +1,8 @@
-from . import db
 from datetime import datetime
 import uuid
+from app import db, LoginManager
 from flask_login import UserMixin
+from . import db
 
 # Association table for many-to-many: User <-> UserGroup
 user_group_members = db.Table(
@@ -12,6 +13,8 @@ user_group_members = db.Table(
     ),
 )
 
+login_manager = LoginManager()
+
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -21,12 +24,11 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
-
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     # Many-to-many: users can be in multiple groups
     groups = db.relationship(
         "UserGroup", secondary=user_group_members, back_populates="members"
     )
-
     # One-to-many: todos assigned directly to this user
     assigned_todos = db.relationship(
         "Todo", back_populates="assigned_user", foreign_keys="Todo.assigned_user_id"
@@ -38,8 +40,21 @@ class User(UserMixin, db.Model):
     # One-to-many: deadlines created by this user
     created_deadlines = db.relationship("Deadline", back_populates="created_by")
 
+    def update_last_seen(self):
+        self.last_seen = datetime.utcnow()
+        db.session.commit()
+
+    def get_id(self):
+        return str(self.id)
+
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+# Now this will work
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class UserGroup(db.Model):

@@ -10,7 +10,7 @@ venv/
 
 # Flask instance folder (if any)
 instance/
-
+not_used/
 # Pytest cache
 .pytest_cache/
 

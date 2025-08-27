@@ -1167,11 +1167,11 @@ body.admin-layout {
         padding: 1.5rem;
         margin: 0 1rem;
     }
-    
+
     .form-actions {
         flex-direction: column;
     }
-    
+
     .form-actions .btn {
         width: 100%;
     }
@@ -1269,12 +1269,39 @@ body.admin-layout {
         padding: 1.5rem;
         margin: 0 1rem;
     }
-    
+
     .add-todo-section .form-actions {
         flex-direction: column;
     }
-    
+
     .add-todo-section .form-actions .btn {
         width: 100%;
     }
+}
+
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-badge.online {
+    background-color: #4caf4fd0;
+    color: rgb(255, 255, 255);
+}
+
+.status-badge.offline {
+    background-color: rgba(244, 67, 54, 0.3);
+    color: white;
+}
+.status-badge.away {
+    background-color: #ff9800;  /* Orange/yellow */
+    color: white;
+}
+.last-seen {
+    font-size: 10px;
+    color: #666;
+    margin-top: 2px;
 }

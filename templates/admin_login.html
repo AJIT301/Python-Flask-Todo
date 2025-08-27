@@ -14,6 +14,6 @@
         <input type="password" name="password" placeholder="Admin Password">
         <button type="submit" class="login-container admin-btn">Login as Admin</button>
     </form>
-    <p><a href="{{ url_for('routes.login') }}" class="regular-login-redirect">Regular User Login</a></p>
+    <p><a href="{{ url_for('auth.login') }}" class="regular-login-redirect">Regular User Login</a></p>
 </div>
 {% endblock %}

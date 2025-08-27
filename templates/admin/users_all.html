@@ -12,9 +12,11 @@
     <section class="users-section">
         <h1>All Users</h1>
         <div class="users-stats">
-            <p>Total Users: <strong>{{ users|length }}</strong></p>
-            <p>Active Users: <strong>{{ users|length }}</strong></p>
-            <p>Inactive Users: <strong>{{ users|length }}</strong></p>
+            <div class="users-stats">
+                <p>Total Users: <strong>{{ total_users }}</strong></p>
+                <p>Currently Online: <strong>{{ active_users_count }}</strong></p>
+                <p>Currently Offline: <strong>{{ logged_out_users_count }}</strong></p>
+            </div>
         </div>
 
         <div class="users-table-container">
@@ -52,7 +54,17 @@
                             {% endif %}
                         </td>
                         <td>
-                            <span class="status-active">Active</span>
+                            {% if user_statuses[user.id] == 'online' %}
+                            <span class="status-badge online">● Online</span>
+                            {% elif user_statuses[user.id] == 'away' %}
+                            <span class="status-badge away">● Away</span>
+                            {% else %}
+                            <span class="status-badge offline">○ Offline</span>
+                            {% endif %}
+                            {% if user_last_seen[user.id] and user_last_seen[user.id] != 'now' and
+                            user_last_seen[user.id] != 'never' %}
+                            <div class="last-seen">Last seen: {{ user_last_seen[user.id] }}</div>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

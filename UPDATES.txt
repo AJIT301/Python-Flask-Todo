@@ -1,3 +1,53 @@
+Update Log - August 27, 2025
+
+🏗️ Architecture & Structure
+🔹 Flask-Login integration - Implemented robust session management with login_user/logout_user functionality
+🔹 Modular authentication system - Created dedicated auth blueprint with proper route organization
+🔹 Session tracking architecture - Built real-time user presence system with active session monitoring
+🔹 Database - Added permanent "last_seen" field to User model for persistent tracking
+
+🎨 Styling & UI Components
+🔹 User status badges - Created color-coded indicators (Online/Away/Offline) with glass-morphism design
+🔹 Admin user list styling - Enhanced user table with role-based highlighting and status columns
+🔹 Real-time status indicators - Added visual feedback for user presence with animated badges
+🔹 Last seen timestamps - Implemented human-readable time formatting for activity tracking
+
+⚡ Performance
+🔹 Heartbeat optimization - Balanced 30-second intervals for responsive presence detection
+🔹 Memory management - Implemented efficient cleanup system with 1-hour timeout for inactive sessions
+🔹 (data-user-authenticated="true") - Added data attributes for authenticated user detection without server requests
+🔹 Database query optimization - Sorted users efficiently with admin-first ordering
+
+🖥️ UX/UI Features
+   ▶ Real-time User Presence System:
+    🔹 Online status (Green) - Currently active and sending heartbeats
+    🔹 Away status (Yellow) - Recently active (within 5 minutes) but not focused
+    🔹 Offline status (Red) - Inactive for 5+ minutes or never active
+    🔹 Last seen timestamps - Precise activity tracking (seconds/minutes/hours ago)
+    🔹 Admin prioritization - Admin users displayed first in user listings
+
+🛠️ Core Functionality
+🔹 Heartbeat mechanism - JavaScript-based activity detection with focus awareness
+🔹 Session duration tracking - Automatic cleanup of inactive sessions after configurable timeouts
+🔹 Real-time status updates - Live user presence detection without page refresh
+🔹 Persistent activity logging - Database-stored last seen times for historical tracking
+
+🐛 Bug Fixes
+🔹 Session persistence issues - Fixed users showing as logged in after browser close
+🔹 Heartbeat timing conflicts - Resolved immediate vs interval heartbeat scheduling
+🔹 Status logic errors - Corrected Online/Away/Offline state transitions
+🔹 Template rendering - Fixed data attribute placement in base HTML structure
+🔹 User sorting - Implemented proper admin-first user list ordering
+
+🔧 Development Workflow
+🔹 Production-ready timeouts - Configured balanced intervals (30s heartbeat, 1min away, 1hr cleanup)
+🔹 Memory leak prevention - Added systematic cleanup of old session data
+🔹 Debug logging - Enhanced console output for session tracking verification
+🔹 Template modularity - Created reusable status display components
+🔹 Security considerations - Implemented proper authentication checks for heartbeat endpoints
+
+-----------------------------------------------------------------
+
 Update Log - August 26, 2025
 
 🏗️ Architecture & Structure
@@ -84,7 +134,7 @@ CODE QUALITY:
 
 2025-08-22
 
--Optimized flash system further (tested GPU usage spikes on RTX 2060).
+-Optimized flash system further (tested GPU usage spikes on RTX2060 ~20%).
 -Deferred CSS polish (conic gradients → experimental replacements later).
 -Backend planning shift → focus on per-user tasks + group-based tasks.
 -Registration improvements:

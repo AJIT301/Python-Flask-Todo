@@ -14,9 +14,8 @@
     {% block additional_styling %}{% endblock %}
 </head>
 
-
-<body>
-    <!-- Flash messages container -->
+<body {% if current_user.is_authenticated %}data-user-authenticated="true" {% endif %}>
+    <!--  Flash messages container -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="flash-container">
@@ -28,10 +27,32 @@
     </div>
     {% endif %}
     {% endwith %}
+
     {% block content %}{% endblock %}
-    {% block scripts %}{% endblock %}
+
+    <!-- Heartbeat script -->
+    <script>
+        function sendHeartbeat() {
+            // Only run if user is authenticated and page has focus
+            if (document.body.dataset.userAuthenticated === "true" && document.hasFocus()) {
+                fetch('/api/heartbeat', {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }).catch(function (error) {
+                    console.log('Heartbeat failed:', error);
+                });
+            }
+        }
+        // Send heartbeat immediately when page loads
+        sendHeartbeat();
+        // Then set interval for every 30 seconds
+        setInterval(sendHeartbeat, 30000);
+    </script>
     <script src="{{ url_for('static', filename='utils/flash.js') }}"></script>
     <script src="{{ url_for('static', filename='utils/msg.js') }}"></script>
+
+    <!-- Yield to additional scripts block if needed -->
+    {% block additional_scripts %}{% endblock %}
 </body>
 
 </html>
