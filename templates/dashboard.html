@@ -2,14 +2,102 @@
 
 {% block title %}Dashboard - Todo App{% endblock %}
 
-{% block content %}
 {% block additional_styling %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<script>
+    function toggleTermInputs() {
+        var checkbox = document.getElementById('select-term-checkbox');
+        var termInputs = document.getElementById('term-inputs');
+        termInputs.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    function openDeadlineModal(deadlineId, title, description, dueDate, createdBy) {
+        const modal = document.getElementById('deadlineModal');
+        const modalTitle = document.getElementById('modalDeadlineTitle');
+        const modalContent = document.getElementById('modalDeadlineContent');
+
+        modalTitle.textContent = title;
+        modalContent.innerHTML = `
+            <p><strong>Description:</strong> ${description || 'No description provided'}</p>
+            <p><strong>Due Date:</strong> ${dueDate}</p>
+            <p><strong>Created by:</strong> ${createdBy}</p>
+            <p><strong>Deadline ID:</strong> ${deadlineId}</p>
+        `;
+
+        modal.style.display = 'block';
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeadlineModal() {
+        document.getElementById('deadlineModal').style.display = 'none';
+        // Re-enable body scroll
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+        const modal = document.getElementById('deadlineModal');
+        if (event.target == modal) {
+            closeDeadlineModal();
+        }
+    }
+
+    // Close modal with Escape key
+    document.onkeydown = function (evt) {
+        evt = evt || window.event;
+        var isEscape = false;
+        if ("key" in evt) {
+            isEscape = (evt.key === "Escape" || evt.key === "Esc");
+        } else {
+            isEscape = (evt.keyCode === 27);
+        }
+        if (isEscape) {
+            closeDeadlineModal();
+        }
+    };
+</script>
 {% endblock %}
 
+{% block content %}
 {% include '_user_panel.html' %}
+
 <div class="container dashboard-container">
     <h1>My To-Do List</h1>
+
+    <!-- Deadlines Section - Integrated -->
+    <!-- Deadlines Section - Simplified -->
+    <!-- Deadlines Section - Simplified -->
+    {% if user_deadlines %}
+    <div class="deadline-section">
+        <h2>⚠️ Active Deadlines</h2>
+        {% for deadline in user_deadlines %}
+        <div class="deadline-item">
+            <span class="deadline-title">{{ deadline.title }}</span>
+            <div class="deadline-simple-actions">
+                <a href="javascript:void(0)" class="inspect-deadline-btn"
+                    onclick="openDeadlineModal({{ deadline.id }}, '{{ deadline.title|escapejs }}', '{{ deadline.description|escapejs if deadline.description else '' }}', '{{ deadline.deadline_date|datetime_british }}', '{{ deadline.created_by.username|escapejs }}')">Inspect</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <!-- Deadline Modal -->
+    <div id="deadlineModal" class="deadline-modal">
+        <div class="deadline-modal-content">
+            <div class="deadline-modal-header">
+                <h3 id="modalDeadlineTitle">Deadline Details</h3>
+                <span class="close-modal" onclick="closeDeadlineModal()">&times;</span>
+            </div>
+            <div class="deadline-modal-body" id="modalDeadlineContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="deadline-modal-footer">
+                <button onclick="closeDeadlineModal()" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Todo List -->
     <ul>
         {% for todo in todos %}
         <li>
@@ -25,6 +113,9 @@
                 <small>From: {{ todo.date_from|datetime_british }} To: {{ todo.date_to|datetime_british }}</small>
             </div>
             {% endif %}
+
+            <!-- Conditional actions based on user role -->
+            {% if current_user.is_admin %}
             <div class="actions">
                 <a href="{{ url_for('routes.edit', todo_id=todo.id) }}">Edit</a>
                 <form action="{{ url_for('routes.delete', todo_id=todo.id) }}" method="POST">
@@ -33,10 +124,18 @@
                 </form>
                 <a href="{{ url_for('routes.inspect', todo_id=todo.id) }}">Inspect</a>
             </div>
+            {% else %}
+            <div class="actions">
+                <a href="{{ url_for('routes.inspect', todo_id=todo.id) }}">Inspect</a>
+                <!-- Future: Add "Request Edit" button here -->
+            </div>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
 
+    <!-- Conditional task creation - only for admins -->
+    {% if current_user.is_admin %}
     <form class="add-form" action="{{ url_for('routes.add') }}" method="POST">
         <input type="text" id="todo-input" name="todo" placeholder="Add a new task...">
         <div class="term-selection">
@@ -51,16 +150,12 @@
         </div>
         <button type="submit">Add Task</button>
     </form>
+    {% endif %}
 </div>
 
 {% endblock %}
 
 {% block scripts %}
-<script>
-    function toggleTermInputs() {
-        var checkbox = document.getElementById('select-term-checkbox');
-        var termInputs = document.getElementById('term-inputs');
-        termInputs.style.display = checkbox.checked ? 'block' : 'none';
-    }
-</script>
+
+
 {% endblock %}

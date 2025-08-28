@@ -89,7 +89,6 @@ def index():
     return render_template("index.html")
 
 
-
 @bp.route("/dashboard")
 @login_required
 def dashboard():
@@ -98,24 +97,97 @@ def dashboard():
         if current_user.is_admin:
             # If admin somehow gets here, redirect to admin dashboard
             return redirect(url_for("admin.dashboard"))
+
         # Get user's direct tasks
         user_todos = Todo.query.filter_by(assigned_user_id=current_user.id)
+
         # Get tasks from user's groups
         group_todos = Todo.query.filter(
             Todo.assigned_group_id.in_([group.id for group in current_user.groups])
         )
+
         # Combine and order all tasks
         todos = user_todos.union(group_todos).order_by(Todo.created_at.desc()).all()
-        return render_template("dashboard.html", todos=todos, user=current_user)
+
+        # Get user's deadlines
+        from datetime import datetime
+
+        now = datetime.now()
+
+        # Get deadlines assigned to this user (you'll need to implement this based on your assignment logic)
+        user_deadlines = get_user_deadlines(current_user, now)
+
+        return render_template(
+            "dashboard.html",
+            todos=todos,
+            user=current_user,
+            user_deadlines=user_deadlines,
+            now=now,
+        )
     except Exception as e:
         logger.error(f"Database error in dashboard: {e}")
         flash("Error loading tasks", "error")
         return render_template(
             "dashboard.html",
-            todos=todos,
+            todos=[],
             user=current_user,
-            get_group_display_name=get_group_display_name,
+            user_deadlines=[],
+            now=datetime.now(),
         )
+
+
+def get_user_deadlines(user, current_time):
+    """Get deadlines assigned to a user"""
+    try:
+        # Import here to avoid circular imports
+        from app.models import Deadline
+
+        # Option 1: If you have a direct user-deadline relationship
+        # user_deadlines = Deadline.query.join(Deadline.assigned_users).filter(
+        #     Deadline.assigned_users.contains(user),
+        #     Deadline.is_active == True
+        # ).all()
+
+        # Option 2: If deadlines are assigned by group
+        # group_deadlines = Deadline.query.join(Deadline.assigned_groups).filter(
+        #     Deadline.assigned_groups.any(id__in=[g.id for g in user.groups]),
+        #     Deadline.is_active == True
+        # ).all()
+
+        # Option 3: If you have an assignment table (recommended)
+        # This assumes you'll create an assignment system later
+
+        # For now, let's return sample data to test the UI
+        # You'll replace this with actual deadline fetching logic
+        return []
+
+    except Exception as e:
+        logger.error(f"Error fetching user deadlines: {e}")
+        return []
+
+
+def get_user_deadlines(user, current_time):
+    """Get deadlines assigned to a user - temporary test version"""
+    try:
+        from app.models import Deadline
+        from datetime import timedelta
+
+        # For testing - get all active deadlines
+        # Later you'll filter by user assignments
+        active_deadlines = Deadline.query.filter_by(is_active=True).all()
+
+        # Add helper properties for template
+        for deadline in active_deadlines:
+            if hasattr(deadline.deadline_date, "date"):
+                time_diff = deadline.deadline_date - current_time
+                deadline.days_remaining = time_diff.days
+                deadline.is_urgent = time_diff.days <= 3 and time_diff.days >= 0
+
+        return active_deadlines[:3]  # Show first 3 for testing
+
+    except Exception as e:
+        logger.error(f"Error fetching user deadlines: {e}")
+        return []
 
 
 # ---------------- REGISTER ----------------
@@ -592,5 +664,3 @@ def bulk_delete():
         db.session.rollback()
         logger.error(f"Database error in bulk delete: {e}")
         return jsonify({"error": "Error deleting todos"}), 500
-
-

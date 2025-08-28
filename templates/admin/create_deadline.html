@@ -28,6 +28,42 @@
                 <input type="datetime-local" id="deadline_date" name="deadline_date" required>
             </div>
 
+            <!-- Assignment Type Section -->
+            <div class="form-group">
+                <label>Assign To:</label>
+                <div class="assignment-options">
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="assign_individual" name="assignment_type" value="individual">
+                        <label for="assign_individual">Individual Users</label>
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="assign_group" name="assignment_type" value="group">
+                        <label for="assign_group">User Groups</label>
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="assign_everyone" name="assignment_type" value="everyone">
+                        <label for="assign_everyone">Everyone</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Select Options -->
+            <div id="assignment-selects" style="display: none;">
+                <div id="individual-select" class="form-group" style="display: none;">
+                    <label for="selected_users">Select Users:</label>
+                    <select id="selected_users" name="selected_users" multiple size="5">
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+
+                <div id="group-select" class="form-group" style="display: none;">
+                    <label for="selected_groups">Select Groups:</label>
+                    <select id="selected_groups" name="selected_groups" multiple size="5">
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group checkbox-group">
                 <input type="checkbox" id="is_active" name="is_active">
                 <label for="is_active">Make this deadline active immediately</label>
@@ -40,27 +76,5 @@
         </form>
     </section>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    // Set default deadline date to tomorrow
-    document.addEventListener('DOMContentLoaded', function () {
-        const deadlineInput = document.getElementById('deadline_date');
-        if (deadlineInput && !deadlineInput.value) {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(17, 0, 0, 0); // 5:00 PM
-
-            // Format for datetime-local input
-            const year = tomorrow.getFullYear();
-            const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-            const day = String(tomorrow.getDate()).padStart(2, '0');
-            const hours = String(tomorrow.getHours()).padStart(2, '0');
-            const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
-
-            deadlineInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
-    });
-</script>
+<script src="{{ url_for('static', filename='utils/userFetch.js') }}"></script>
 {% endblock %}

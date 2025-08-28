@@ -21,7 +21,7 @@ login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
-
+    
     # Configure app
     app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
@@ -33,9 +33,7 @@ def create_app():
     database = os.getenv("DB_NAME")
     if not all([user, password, host, port, database]):
         raise RuntimeError("Database environment variables are not fully set.")
-
     encoded_password = quote_plus(password)
-
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         f"postgresql://{user}:{encoded_password}@{host}:{port}/{database}"
     )
@@ -75,10 +73,16 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return models.User.query.get(int(user_id))
+    def escapejs_filter(text):
+        """Escape text for use in JavaScript strings"""
+        if not text:
+            return ''
+        return text.replace('\\', '\\\\').replace('"', '\\"').replace("'", "\\'").replace('\n', '\\n').replace('\r', '\\r')
 
     # Register Jinja filter
     app.jinja_env.filters["datetime_british"] = format_datetime_british
-
+    # Register the filter
+    app.jinja_env.filters['escapejs'] = escapejs_filter
     # Register error handlers
     from . import error_handlers
 

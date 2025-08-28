@@ -2,7 +2,6 @@
 /* --------Dashboard.HTML START----------- */
 
 .container.dashboard-container {
-
     max-width: 800px;
     width: 100%;
     margin: 2rem auto;
@@ -14,7 +13,6 @@
 .container.dashboard-container h1 {
     text-align: center;
     font-size: 2rem;
-
 }
 
 .container.dashboard-container ul {
@@ -39,8 +37,8 @@
     padding: 15px 20px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     color: #f1f1f1;
@@ -102,15 +100,13 @@
     display: flex;
     align-items: flex-end;
     gap: 5px;
-}
-.user_data_logout {
     margin-left: auto;
 }
+
 .text-bold {
     font-weight: 700;
     margin-right: 0.3rem;
 }
-
 
 .todo-item {
     display: flex;
@@ -176,6 +172,170 @@
 
 .display {
     display: none;
+}
+
+/* --------Deadline Section - Clean and Separate----------- */
+.deadline-section {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.deadline-section h2 {
+    color: #ff6b6b;
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.deadline-item {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deadline-item:last-child {
+    margin-bottom: 0;
+}
+
+.deadline-title {
+    font-weight: 600;
+    color: #ff6b6b;
+    font-size: 16px;
+}
+
+.deadline-simple-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.deadline-simple-actions a {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.deadline-simple-actions a:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Modal styling for detailed deadline view - ENHANCED */
+.deadline-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.deadline-modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 85%;
+    max-width: 700px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 2px solid #ff6b6b;
+    position: relative;
+    z-index: 10000;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.deadline-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+}
+
+.deadline-modal-header h3 {
+    color: #ff6b6b;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.close-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #888;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+}
+
+.deadline-modal-body {
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.deadline-modal-body p {
+    margin: 12px 0;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border-left: 4px solid #ff6b6b;
+}
+
+.deadline-modal-body strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.deadline-modal-footer {
+    text-align: right;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.deadline-modal-footer button {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.deadline-modal-footer button:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-1px);
+}
+
+.inspect-deadline-btn {
+    cursor: pointer;
 }
 
 /* --------Dashboard.HTML END----------- */

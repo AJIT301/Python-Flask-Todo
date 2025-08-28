@@ -218,26 +218,76 @@ def manage_deadlines():
 @login_required
 @admin_required
 def create_deadline():
+    # Define these for both GET and POST requests
+    all_users = User.query.filter_by(is_admin=False).all()
+    all_groups = UserGroup.query.all()
+
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         deadline_date = request.form.get("deadline_date")
         is_active = bool(request.form.get("is_active"))
 
+        # Get assignment data - this is the key part for multiple selections
+        assignment_types = request.form.getlist("assignment_type")
+        selected_users = request.form.getlist("selected_users")  # Gets list of selected user IDs
+        selected_groups = request.form.getlist("selected_groups")  # Gets list of selected group IDs
+        #debug
+        print(f"Assignment types: {assignment_types}")
+        print(f"Selected users: {selected_users}")
+        print(f"Selected groups: {selected_groups}")
+        #debug end
         if not title or not deadline_date:
             flash("Title and deadline date are required.", "error")
-            return render_template("admin/create_deadline.html")
+            return render_template(
+                "admin/create_deadline.html", all_users=all_users, all_groups=all_groups
+            )
 
         try:
+            # Create the deadline
+            deadline_datetime = datetime.fromisoformat(deadline_date)
             new_deadline = Deadline(
                 title=title,
                 description=description,
-                deadline_date=datetime.fromisoformat(deadline_date),
+                deadline_date=deadline_datetime,
                 is_active=is_active,
                 created_by_id=current_user.id,
             )
 
             db.session.add(new_deadline)
+            db.session.flush()  # Get the deadline ID
+
+            # Handle assignments based on selected types
+            assigned_user_ids = set()
+
+            if "everyone" in assignment_types:
+                # Assign to all users
+                all_regular_users = User.query.filter_by(is_admin=False).all()
+                assigned_user_ids.update(user.id for user in all_regular_users)
+            else:
+                # Handle individual and group assignments
+                if "individual" in assignment_types and selected_users:
+                    # Add selected individual users
+                    for user_id in selected_users:
+                        assigned_user_ids.add(int(user_id))
+
+                if "group" in assignment_types and selected_groups:
+                    # Add users from selected groups
+                    for group_id in selected_groups:
+                        group = UserGroup.query.get(int(group_id))
+                        if group:
+                            for user in group.members:
+                                if not user.is_admin:  # Exclude admins
+                                    assigned_user_ids.add(user.id)
+
+            # Create assignments for all selected users
+            # Assuming you have an Assignment model or similar
+            for user_id in assigned_user_ids:
+                # Create your assignment here
+                # assignment = Assignment(deadline_id=new_deadline.id, user_id=user_id)
+                # db.session.add(assignment)
+                pass
+
             db.session.commit()
             flash("Deadline created successfully!", "success")
             return redirect(url_for("admin.manage_deadlines"))
@@ -245,7 +295,10 @@ def create_deadline():
             db.session.rollback()
             flash(f"Error creating deadline: {str(e)}", "error")
 
-    return render_template("admin/create_deadline.html")
+    # GET request - show the form
+    return render_template(
+        "admin/create_deadline.html", all_users=all_users, all_groups=all_groups
+    )
 
 
 @admin_bp.route("/deadlines/<int:deadline_id>/toggle", methods=["POST"])
@@ -410,3 +463,31 @@ def add_todo():
         logger.error(f"Database error adding todo: {e}")
         flash(f"Error adding task: {str(e)}", "error")
         return redirect(url_for("admin.dashboard"))
+
+
+# deadline user-select api points for retrieving real-time data from database
+# all users and user_groups
+@admin_bp.route("/api/users", methods=["GET"])
+@login_required
+@admin_required
+def get_users_api():
+    users = User.query.filter_by(is_admin=False).all()
+    return jsonify(
+        [
+            {"id": user.id, "username": user.username, "email": user.email}
+            for user in users
+        ]
+    )
+
+
+@admin_bp.route("/api/groups", methods=["GET"])
+@login_required
+@admin_required
+def get_groups_api():
+    groups = UserGroup.query.all()
+    return jsonify(
+        [
+            {"id": group.id, "name": group.name, "description": group.description}
+            for group in groups
+        ]
+    )
