@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 from app import db, LoginManager
 from flask_login import UserMixin
-from . import db
+from app import db
 
 # Association table for many-to-many: User <-> UserGroup
 user_group_members = db.Table(

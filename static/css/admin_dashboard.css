@@ -606,8 +606,8 @@ body.admin-layout {
     padding: 1.5rem;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     min-width: 150px;
     flex: 1;
 }
@@ -638,8 +638,8 @@ body.admin-layout {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -916,8 +916,8 @@ body.admin-layout {
     padding: 1.5rem;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     min-width: 150px;
     flex: 1;
 }
@@ -942,8 +942,8 @@ body.admin-layout {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 1px;
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     overflow-x: auto;
 }
 
@@ -1106,8 +1106,8 @@ body.admin-layout {
     padding: 2rem;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 .form-group {
@@ -1195,8 +1195,8 @@ body.admin-layout {
     padding: 2rem;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
