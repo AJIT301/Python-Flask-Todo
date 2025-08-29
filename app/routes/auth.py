@@ -32,7 +32,6 @@ bp = Blueprint("auth", __name__)
 active_user_sessions = set()  # In production, use Redis or database
 user_last_activity = defaultdict(float)
 
-
 # ---------------- LOGIN / LOGOUT ----------------
 @bp.route("/login", methods=["GET", "POST"])
 def login():

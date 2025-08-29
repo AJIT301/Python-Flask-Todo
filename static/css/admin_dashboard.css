@@ -828,7 +828,7 @@ body.admin-layout {
 /* --------End Users by Group Styles----------- */
 
 
-/* --------Deadlines Management Styles----------- */
+//* --------Deadlines Management Styles----------- */
 
 .deadlines-section {
     width: 100%;
@@ -850,28 +850,21 @@ body.admin-layout {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Base button styles - ALL buttons inherit this */
 .btn {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 8px 16px; /* Consistent padding */
     border-radius: 6px;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
-    border: none;
+    border: 1px solid transparent; /* Consistent border */
     cursor: pointer;
     text-align: center;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    font-size: 0.9rem; /* Consistent font size */
+    line-height: 1.2; /* Consistent line height */
+    box-sizing: border-box; /* Include padding in width/height */
+    vertical-align: middle; /* Align buttons properly */
 }
 
 .btn-sm {
@@ -879,29 +872,94 @@ body.admin-layout {
     font-size: 0.85rem;
 }
 
+/* Primary button */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #188cda 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #188cda 0%, #667eea 100%);
+}
+
+/* Success button */
 .btn-success {
     background: rgba(40, 167, 69, 0.2);
     color: #28a745;
     border: 1px solid rgba(40, 167, 69, 0.4);
 }
 
+.btn-success:hover {
+    background: rgba(40, 167, 69, 0.4);
+    border: 1px solid rgba(40, 167, 69, 0.6);
+}
+
+/* Warning button */
 .btn-warning {
     background: rgba(255, 193, 7, 0.2);
     color: #ffc107;
     border: 1px solid rgba(255, 193, 7, 0.4);
 }
 
-.btn-secondary {
-    background: rgba(108, 117, 125, 0.2);
-    color: #6c757d;
-    border: 1px solid rgba(108, 117, 125, 0.4);
+.btn-warning:hover {
+    background: rgba(255, 193, 7, 0.4);
+    border: 1px solid rgba(255, 193, 7, 0.6);
 }
 
+/* Secondary button (Edit) */
+.btn-secondary {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.4); /* Fixed: was rgba(102, 148, 234, 0.5) */
+}
+
+.btn-secondary:hover {
+    background: rgba(102, 126, 234, 0.3);
+    border: 1px solid rgba(102, 126, 234, 0.6); /* Fixed: was rgba(102, 148, 234, 0.6) */
+}
+
+/* Danger button (Delete) */
+.btn-danger {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545; /* Fixed: was rgb(248, 0, 0) */
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+.btn-danger:hover {
+    background: rgba(220, 53, 69, 0.4);
+    border: 1px solid rgba(220, 53, 69, 0.8);
+}
+
+/* Hover effects for all buttons */
 .btn:hover {
     text-decoration: none;
     transform: translateY(-1px);
 }
 
+/* Fix for button alignment */
+.deadline-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.deadline-actions .btn {
+    margin: 0; /* Remove any default margins */
+}
+
+.deadline-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.deadline-actions form {
+    margin: 0;
+}
 /* Deadlines Stats */
 .deadlines-stats {
     display: flex;
@@ -1403,3 +1461,5 @@ body.admin-layout {
 }
 
 /* deadline checkboxes */
+
+

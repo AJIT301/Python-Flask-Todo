@@ -2,7 +2,6 @@ from datetime import datetime
 import uuid
 from app import db, LoginManager
 from flask_login import UserMixin
-from app import db
 
 # Association table for many-to-many: User <-> UserGroup
 user_group_members = db.Table(
@@ -14,6 +13,30 @@ user_group_members = db.Table(
 )
 
 login_manager = LoginManager()
+
+# ==================== ASSOCIATION TABLES ====================
+#
+deadline_user_assignments = db.Table(
+    "deadline_user_assignments",
+    db.Column(
+        "deadline_id", db.Integer, db.ForeignKey("deadlines.id"), primary_key=True
+    ),
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
+    db.Column("assigned_at", db.DateTime, default=datetime.utcnow),
+)
+
+deadline_group_assignments = db.Table(
+    "deadline_group_assignments",
+    db.Column(
+        "deadline_id", db.Integer, db.ForeignKey("deadlines.id"), primary_key=True
+    ),
+    db.Column(
+        "group_id", db.Integer, db.ForeignKey("user_groups.id"), primary_key=True
+    ),
+    db.Column("assigned_at", db.DateTime, default=datetime.utcnow),
+)
+#
+# ==================== END ASSOCIATION TABLES ====================
 
 
 class User(UserMixin, db.Model):
@@ -49,12 +72,6 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
-
-
-# Now this will work
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
 class UserGroup(db.Model):
@@ -172,7 +189,19 @@ class Deadline(db.Model):
     # Foreign key to track who created the deadline
     created_by_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
 
-    # Relationship
+    # Many-to-many relationships for assignments
+    assigned_users = db.relationship(
+        "User",
+        secondary=deadline_user_assignments,
+        backref=db.backref("assigned_deadlines", lazy="dynamic"),
+    )
+    assigned_groups = db.relationship(
+        "UserGroup",
+        secondary=deadline_group_assignments,
+        backref=db.backref("assigned_deadlines", lazy="dynamic"),
+    )
+
+    # Relationship for creator
     created_by = db.relationship("User", back_populates="created_deadlines")
 
     def to_dict(self):
@@ -187,8 +216,16 @@ class Deadline(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "created_by": self.created_by.username if self.created_by else None,
+            "assigned_users_count": len(self.assigned_users),
+            "assigned_groups_count": len(self.assigned_groups),
         }
 
     def __repr__(self):
         status = "ACTIVE" if self.is_active else "INACTIVE"
         return f"<Deadline {self.title} - {status}>"
+
+
+# Now this will work
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))

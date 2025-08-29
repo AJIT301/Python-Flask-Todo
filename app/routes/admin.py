@@ -230,13 +230,17 @@ def create_deadline():
 
         # Get assignment data - this is the key part for multiple selections
         assignment_types = request.form.getlist("assignment_type")
-        selected_users = request.form.getlist("selected_users")  # Gets list of selected user IDs
-        selected_groups = request.form.getlist("selected_groups")  # Gets list of selected group IDs
-        #debug
+        selected_users = request.form.getlist(
+            "selected_users"
+        )  # Gets list of selected user IDs
+        selected_groups = request.form.getlist(
+            "selected_groups"
+        )  # Gets list of selected group IDs
+        # debug
         print(f"Assignment types: {assignment_types}")
         print(f"Selected users: {selected_users}")
         print(f"Selected groups: {selected_groups}")
-        #debug end
+        # debug end
         if not title or not deadline_date:
             flash("Title and deadline date are required.", "error")
             return render_template(
@@ -344,6 +348,40 @@ def edit_deadline(deadline_id):
             flash(f"Error updating deadline: {str(e)}", "error")
 
     return render_template("admin/edit_deadline.html", deadline=deadline)
+
+
+@admin_bp.route("/deadlines/<int:deadline_id>/delete", methods=["POST"])
+@login_required
+@admin_required
+def delete_deadline(deadline_id):
+    try:
+        deadline = Deadline.query.get_or_404(deadline_id)
+        deadline_title = deadline.title
+
+        # Check for assignments before deletion
+        user_assignments = len(deadline.assigned_users)
+        group_assignments = len(deadline.assigned_groups)
+        total_assignments = user_assignments + group_assignments
+
+        if total_assignments > 0:
+            flash(
+                f"Cannot delete deadline '{deadline_title}' - it has {total_assignments} assignments. "
+                f"Remove assignments first.",
+                "error",
+            )
+            return redirect(url_for("admin.manage_deadlines"))
+
+        # Safe to delete - no assignments
+        db.session.delete(deadline)
+        db.session.commit()
+
+        flash(f"Deadline '{deadline_title}' deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting deadline: {str(e)}", "error")
+        print(f"Delete deadline error: {e}")
+
+    return redirect(url_for("admin.manage_deadlines"))
 
 
 # Add this to your routes/admin.py file
