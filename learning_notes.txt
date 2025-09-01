@@ -1,7 +1,30 @@
 .\venv\Scripts\Activate.ps1  > activate VENV before doing anything in this project. 
 
+docker setup:
 
+# Stop and remove containers
+docker-compose down
 
+# Remove containers AND volumes (deletes database data!)
+docker-compose down --volumes
+
+# Then rebuild and start
+docker-compose up --build
+
+# Run seeder
+docker-compose exec web flask seed
+# Run reset DB script
+docker-compose exec web python reset.py
+
+# View logs for web container
+docker-compose logs web -f
+
+# View logs for db container
+docker-compose logs db -f
+
+# View logs for nginx container
+docker-compose logs nginx -f
+-------------------
 
 pip freeze > requirements.txt > automatically add all dependencies
 -------------------

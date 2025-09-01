@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def format_datetime_british(dt_object):
     """Format datetime object to British format"""
     if not dt_object:
@@ -21,3 +22,16 @@ def format_datetime_british(dt_object):
     else:
         suffix = {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
     return dt_object.strftime(f"{day}{suffix} of %B, %Y at %H:%M")
+
+
+def escapejs_filter(text):
+    """Escape text for use in JavaScript strings (XSS protection)"""
+    if not text:
+        return ""
+    return (
+        text.replace("\\", "\\\\")  # Escape backslashes
+        .replace('"', '\\"')  # Escape double quotes
+        .replace("'", "\\'")  # Escape single quotes
+        .replace("\n", "\\n")  # Escape newlines
+        .replace("\r", "\\r")  # Escape carriage returns
+    )

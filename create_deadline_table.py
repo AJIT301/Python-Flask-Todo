@@ -2,19 +2,24 @@
 from app import create_app, db
 from sqlalchemy import text
 
+
 def create_deadlines_table():
     app = create_app()
-    
+
     with app.app_context():
         # Check if table exists
         try:
-            result = db.session.execute(text("""
+            result = db.session.execute(
+                text(
+                    """
                 SELECT EXISTS (
                     SELECT FROM information_schema.tables 
                     WHERE table_name = 'deadlines'
                 );
-            """)).fetchone()
-            
+            """
+                )
+            ).fetchone()
+
             if not result[0]:
                 print("Creating deadlines table...")
                 create_sql = """
@@ -38,6 +43,7 @@ def create_deadlines_table():
             db.session.rollback()
             print(f"❌ Error: {e}")
             raise
+
 
 if __name__ == "__main__":
     create_deadlines_table()

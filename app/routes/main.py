@@ -87,6 +87,7 @@ def secret():
 @bp.route("/")
 def index():
     return render_template("index.html")
+    # return "Website is loaded and working correctly."
 
 
 @bp.route("/dashboard")

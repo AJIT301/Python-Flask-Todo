@@ -124,8 +124,6 @@ def logout():
 
 
 ###Session cleaner.
-
-
 def cleanup_expired_sessions(timeout_seconds=600):
     """Remove users who haven't been active for timeout_seconds"""
     import time
@@ -146,9 +144,7 @@ def cleanup_expired_sessions(timeout_seconds=600):
     return len(expired_users)
 
 
-# Flask route to handle heartbeats
-
-
+## Flask route to handle heartbeats (for js script)
 @bp.route("/api/heartbeat", methods=["POST"])
 def heartbeat():
     import time

@@ -1,6 +1,11 @@
 from app import create_app
 import sys
 import logging
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure a simple logger for the startup script
 logging.basicConfig(
@@ -10,10 +15,10 @@ logging.basicConfig(
 try:
     # The create_app function now handles the initial DB connection check.
     app = create_app()
-    logging.info("Flask app created successfully ✅")
+    logging.info("Flask app created successfully")
 except RuntimeError as e:
     # This block will now catch the database connection error from create_app
-    logging.critical(f"❌ Failed to create Flask app: {e}")
+    logging.critical(f"[ERROR] Failed to create Flask app: {e}")
     logging.critical("\nPlease check your database configuration and ensure it is running:")
     logging.critical("1. PostgreSQL server is running.")
     logging.critical("2. Database credentials in .env file are correct.")
@@ -26,5 +31,9 @@ except Exception as e:
     sys.exit(1)
 
 if __name__ == "__main__":
-    logging.info("Starting Flask development server...")
-    app.run(host="192.168.0.10", port=5000, debug=True)
+    # Use environment variables for host and port for flexibility, with sensible defaults.
+
+    host = os.getenv("FLASK_RUN_HOST", "127.0.0.1")
+    port = int(os.getenv("FLASK_RUN_PORT", 5000))
+    logging.info(f"Starting Flask development server on http://{host}:{port}")
+    app.run(host=host, port=port, debug=True)

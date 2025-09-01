@@ -11,9 +11,9 @@ logging.basicConfig(
 
 try:
     app = create_app()
-    logging.info("Flask app created successfully ✅")
+    logging.info("Flask app created successfully")
 except RuntimeError as e:
-    logging.critical(f"❌ Failed to create Flask app: {e}")
+    logging.critical(f"[ERROR]Failed to create Flask app: {e}")
     logging.critical("\nPlease check your database configuration and ensure it is running.")
     sys.exit(1)
 except Exception as e:
