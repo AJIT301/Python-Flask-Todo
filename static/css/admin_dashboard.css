@@ -213,16 +213,16 @@ body.admin-layout {
 }
 
 .actions form {
-    display: inline;
+    transition: all 0.2s ease;
 }
-
 .actions form a {
     color: #f44336;
     background: rgba(244, 67, 54, 0.1);
 }
 
 .actions form a:hover {
-    background: rgba(244, 67, 54, 0.2);
+    background: rgba(244, 67, 54, 0.3);
+    transform: translateY(-1px);
 }
 
 .actions a[href*="inspect"] {
@@ -277,7 +277,6 @@ body.admin-layout {
 }
 
 #term-inputs {
-    display: none;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -299,13 +298,13 @@ body.admin-layout {
     padding: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(117, 116, 116, 0.3);
     color: white;
 }
 
-#term-inputs {
+/* #term-inputs {
     display: none;
-}
+} */
 
 .add-form button {
     flex: 0 0 auto;
@@ -328,6 +327,10 @@ body.admin-layout {
 
 .add-form button:active {
     transform: translateY(0);
+}
+
+.select-term-checkbox {
+    display: none;
 }
 
 /* Responsive Design */
@@ -852,18 +855,24 @@ body.admin-layout {
 /* Base button styles - ALL buttons inherit this */
 .btn {
     display: inline-block;
-    padding: 8px 16px; /* Consistent padding */
+    padding: 8px 16px;
+    /* Consistent padding */
     border-radius: 6px;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
-    border: 1px solid transparent; /* Consistent border */
+    border: 1px solid transparent;
+    /* Consistent border */
     cursor: pointer;
     text-align: center;
-    font-size: 0.9rem; /* Consistent font size */
-    line-height: 1.2; /* Consistent line height */
-    box-sizing: border-box; /* Include padding in width/height */
-    vertical-align: middle; /* Align buttons properly */
+    font-size: 0.9rem;
+    /* Consistent font size */
+    line-height: 1.2;
+    /* Consistent line height */
+    box-sizing: border-box;
+    /* Include padding in width/height */
+    vertical-align: middle;
+    /* Align buttons properly */
 }
 
 .btn-sm {
@@ -912,24 +921,28 @@ body.admin-layout {
 .btn-secondary {
     background: rgba(102, 126, 234, 0.1);
     color: #667eea;
-    border: 1px solid rgba(102, 126, 234, 0.4); /* Fixed: was rgba(102, 148, 234, 0.5) */
+    border: 1px solid rgba(102, 126, 234, 0.4);
+    /* Fixed: was rgba(102, 148, 234, 0.5) */
 }
 
 .btn-secondary:hover {
     background: rgba(102, 126, 234, 0.3);
-    border: 1px solid rgba(102, 126, 234, 0.6); /* Fixed: was rgba(102, 148, 234, 0.6) */
+    border: 1px solid rgba(102, 126, 234, 0.6);
+    /* Fixed: was rgba(102, 148, 234, 0.6) */
 }
 
 /* Danger button (Delete) */
 .btn-danger {
     background: rgba(220, 53, 69, 0.2);
-    color: #dc3545; /* Fixed: was rgb(248, 0, 0) */
+    color: #dc3545;
+    /* Fixed: was rgb(248, 0, 0) */
     border: 1px solid rgba(220, 53, 69, 0.4);
 }
 
 .btn-danger:hover {
     background: rgba(220, 53, 69, 0.4);
     border: 1px solid rgba(220, 53, 69, 0.8);
+    transform: translateY(-1px);
 }
 
 /* Hover effects for all buttons */
@@ -947,7 +960,8 @@ body.admin-layout {
 }
 
 .deadline-actions .btn {
-    margin: 0; /* Remove any default margins */
+    margin: 0;
+    /* Remove any default margins */
 }
 
 .deadline-actions {
@@ -959,6 +973,7 @@ body.admin-layout {
 .deadline-actions form {
     margin: 0;
 }
+
 /* Deadlines Stats */
 .deadlines-stats {
     display: flex;
@@ -1219,6 +1234,56 @@ body.admin-layout {
     min-width: 120px;
 }
 
+/* OPTION LIST USERS/ USER GROUPS */
+
+.custom-select {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.custom-select .selected {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.custom-select .options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(25, 39, 56, 0.8);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    color: #fff;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 6px;
+    z-index: 10;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.custom-select.open .options {
+    display: block;
+}
+
+.custom-select .options li {
+    padding: 6px 8px;
+}
+
+.custom-select .options li:hover {
+    background: rgba(202, 202, 202, 0.3);
+}
+
+/* OPTION LIST USERS/ USER GROUPS END */
+
 @media (max-width: 768px) {
     .deadline-form {
         padding: 1.5rem;
@@ -1376,6 +1441,8 @@ body.admin-layout {
     margin: 16px 0;
 }
 
+
+
 .checkbox-option {
     display: flex;
     align-items: center;
@@ -1460,5 +1527,3 @@ body.admin-layout {
 }
 
 /* deadline checkboxes */
-
-

@@ -18,23 +18,22 @@
 
         modalTitle.textContent = title;
         modalContent.innerHTML = `
-            <p><strong>Description:</strong> ${description || 'No description provided'}</p>
-            <p><strong>Due Date:</strong> ${dueDate}</p>
-            <p><strong>Created by:</strong> ${createdBy}</p>
-            <p><strong>Deadline ID:</strong> ${deadlineId}</p>
-        `;
+        <p><strong>Description:</strong> ${description || 'No description provided'}</p>
+        <p><strong>Due Date:</strong> ${dueDate}</p>
+        <p><strong>Created by:</strong> ${createdBy}</p>
+        <p><strong>Deadline ID:</strong> ${deadlineId}</p>
+    `;
 
-        modal.style.display = 'block';
-        // Prevent body scroll when modal is open
-        document.body.style.overflow = 'hidden';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // prevent scroll
     }
+
 
     function closeDeadlineModal() {
-        document.getElementById('deadlineModal').style.display = 'none';
-        // Re-enable body scroll
+        const modal = document.getElementById('deadlineModal');
+        modal.classList.remove('show');
         document.body.style.overflow = 'auto';
     }
-
     // Close modal when clicking outside
     window.onclick = function (event) {
         const modal = document.getElementById('deadlineModal');
@@ -61,7 +60,21 @@
 
 {% block content %}
 {% include '_user_panel.html' %}
-
+<!-- Deadline Modal -->
+<div id="deadlineModal" class="deadline-modal">
+    <div class="deadline-modal-content">
+        <div class="deadline-modal-header">
+            <h3 id="modalDeadlineTitle">Deadline Details</h3>
+            <span class="close-modal" onclick="closeDeadlineModal()">&times;</span>
+        </div>
+        <div class="deadline-modal-body" id="modalDeadlineContent">
+            <!-- Content will be loaded dynamically -->
+        </div>
+        <div class="deadline-modal-footer">
+            <button onclick="closeDeadlineModal()" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
 <div class="container dashboard-container">
     <h1>My To-Do List</h1>
 
@@ -82,21 +95,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    <!-- Deadline Modal -->
-    <div id="deadlineModal" class="deadline-modal">
-        <div class="deadline-modal-content">
-            <div class="deadline-modal-header">
-                <h3 id="modalDeadlineTitle">Deadline Details</h3>
-                <span class="close-modal" onclick="closeDeadlineModal()">&times;</span>
-            </div>
-            <div class="deadline-modal-body" id="modalDeadlineContent">
-                <!-- Content will be loaded dynamically -->
-            </div>
-            <div class="deadline-modal-footer">
-                <button onclick="closeDeadlineModal()" class="btn btn-secondary">Close</button>
-            </div>
-        </div>
-    </div>
+
     <!-- Todo List -->
     <ul>
         {% for todo in todos %}
