@@ -18,8 +18,10 @@ from sqlalchemy import func
 from app.models import User, Todo, UserGroup, Deadline
 from app.security.validation import validate_todo_input
 from app.security.sanitize_module import sanitize_input
+from app.security.rate_limit import get_smart_visitor_id
+from flask_wtf.csrf import generate_csrf  # Import this
 from datetime import datetime
-from app import db
+from app import db, limiter
 import logging
 from app.routes.auth import (
     active_user_sessions,
@@ -92,6 +94,7 @@ def inject_helpers():
 
 
 @admin_bp.route("/dashboard")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def dashboard():
@@ -105,6 +108,7 @@ def dashboard():
 
 
 @admin_bp.route("/users")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def show_all_users():
@@ -194,6 +198,7 @@ def format_time_ago(seconds):
 
 
 @admin_bp.route("/users/groups")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)  # Edits
 @login_required
 @admin_required
 def users_by_group():
@@ -207,6 +212,7 @@ def users_by_group():
 
 ###deadline logic
 @admin_bp.route("/deadlines")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def manage_deadlines():
@@ -215,6 +221,7 @@ def manage_deadlines():
 
 
 @admin_bp.route("/deadlines/create", methods=["GET", "POST"])
+@limiter.limit("10 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def create_deadline():
@@ -306,6 +313,7 @@ def create_deadline():
 
 
 @admin_bp.route("/deadlines/<int:deadline_id>/toggle", methods=["POST"])
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def toggle_deadline(deadline_id):
@@ -318,6 +326,7 @@ def toggle_deadline(deadline_id):
 
 
 @admin_bp.route("/deadlines/<int:deadline_id>/edit", methods=["GET", "POST"])
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)  # Deletions
 @login_required
 @admin_required
 def edit_deadline(deadline_id):
@@ -351,6 +360,7 @@ def edit_deadline(deadline_id):
 
 
 @admin_bp.route("/deadlines/<int:deadline_id>/delete", methods=["POST"])
+@limiter.limit("10 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def delete_deadline(deadline_id):
@@ -386,6 +396,7 @@ def delete_deadline(deadline_id):
 
 # Add this to your routes/admin.py file
 @admin_bp.route("/add", methods=["GET", "POST"])
+@limiter.limit("5 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def add_todo():
@@ -506,6 +517,7 @@ def add_todo():
 # deadline user-select api points for retrieving real-time data from database
 # all users and user_groups
 @admin_bp.route("/api/users", methods=["GET"])
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def get_users_api():
@@ -519,6 +531,7 @@ def get_users_api():
 
 
 @admin_bp.route("/api/groups", methods=["GET"])
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 @login_required
 @admin_required
 def get_groups_api():

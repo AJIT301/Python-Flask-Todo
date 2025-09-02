@@ -9,6 +9,7 @@
     <h1>Edit Todo</h1>
 
     <form class="edit-form" action="{{ url_for('routes.edit', todo_id=todo_id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input placeholder="Edit Todo" type="text" name="todo" value="{{ todo.task }}" required>
 
         <div class="term-selection">

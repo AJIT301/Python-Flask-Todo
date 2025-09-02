@@ -17,9 +17,11 @@ from sqlalchemy import func
 from app.models import User, Todo, UserGroup
 from app.security.validation import validate_todo_input
 from app.security.hsh import hash_password, verify_password
+from app.security.rate_limit import get_smart_visitor_id
 from app.security.sanitize_module import sanitize_input
+from flask_wtf.csrf import generate_csrf  # Import this
 from datetime import datetime
-from app import db
+from app import db, limiter
 import logging
 from app.security.validation import (
     validate_username,
@@ -79,18 +81,21 @@ def inject_helpers():
 
 
 @bp.route("/secret")
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 @login_required
 def secret():
     return "You see this because you are logged in!"
 
 
 @bp.route("/")
+@limiter.limit("100 per hour", key_func=get_smart_visitor_id)
 def index():
     return render_template("index.html")
     # return "Website is loaded and working correctly."
 
 
 @bp.route("/dashboard")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def dashboard():
     try:
@@ -202,6 +207,7 @@ def get_random_captcha():
 
 
 @bp.route("/api/registration/groups")
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 def get_registration_groups():
     try:
         # Only get active groups
@@ -217,6 +223,7 @@ def get_registration_groups():
 
 
 @bp.route("/register", methods=["GET", "POST"])
+@limiter.limit("5 per hour", key_func=get_smart_visitor_id)
 def register():
     if request.method == "GET":
         captcha_question, captcha_expected = get_random_captcha()
@@ -402,6 +409,7 @@ def register():
 
 # ---------------- TODO ROUTES ----------------
 @bp.route("/add", methods=["POST"])
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def add():
     """Add a new todo"""
@@ -471,6 +479,7 @@ def add():
 
 
 @bp.route("/edit/<todo_id>", methods=["GET", "POST"])
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 @login_required
 def edit(todo_id):
     """Edit an existing todo"""
@@ -521,6 +530,7 @@ def edit(todo_id):
 
 
 @bp.route("/toggle/<todo_id>", methods=["POST"])
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def toggle_todo(todo_id):
     """Toggle todo completion status"""
@@ -545,6 +555,7 @@ def toggle_todo(todo_id):
 
 
 @bp.route("/delete/<todo_id>", methods=["POST"])
+@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
 @login_required
 def delete(todo_id):
     """Delete a todo"""
@@ -565,6 +576,7 @@ def delete(todo_id):
 
 
 @bp.route("/inspect/<todo_id>")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def inspect(todo_id):
     """View detailed information about a todo"""
@@ -598,6 +610,7 @@ def inspect(todo_id):
 
 
 @bp.route("/api/todos")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def api_todos():
     """API endpoint to get todos as JSON"""
@@ -612,6 +625,7 @@ def api_todos():
 
 
 @bp.route("/api/stats")
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def api_stats():
     """API endpoint to get todo statistics"""
@@ -641,6 +655,7 @@ def api_stats():
 
 
 @bp.route("/bulk-delete", methods=["POST"])
+@limiter.limit("5 per hour", key_func=get_smart_visitor_id)
 def bulk_delete():
     """Delete multiple todos at once"""
     try:

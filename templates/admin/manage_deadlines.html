@@ -72,6 +72,7 @@
                         <td class="deadline-actions">
                             <form action="{{ url_for('admin.toggle_deadline', deadline_id=deadline.id) }}" method="POST"
                                 style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit"
                                     class="btn btn-sm {% if deadline.is_active %}btn-warning{% else %}btn-success{% endif %}">
                                     {% if deadline.is_active %}Deactivate{% else %}Activate{% endif %}
@@ -84,7 +85,8 @@
                             <!-- Add Delete button -->
                             <form action="{{ url_for('admin.delete_deadline', deadline_id=deadline.id) }}" method="POST"
                                 style="display: inline;"
-                                onsubmit="return confirm('Are you sure you want to delete this deadline? This cannot be undone!');">
+                                onsubmit="return confirm('Are you sure you want to delete this deadline? This cannot be undone!');">\
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-danger" title="Delete">
                                     Delete
                                 </button>

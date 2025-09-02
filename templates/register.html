@@ -10,6 +10,7 @@
     <h2>Register Account</h2>
 
     <form method="POST" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="text" name="username" placeholder="Username" value="{{ request.form.username or '' }}" required
             autocomplete="username">
 

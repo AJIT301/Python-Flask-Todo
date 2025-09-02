@@ -4,6 +4,9 @@ from app.models import User
 from app.security.validation import validate_todo_input
 from app.security.hsh import verify_password
 from app.security.sanitize_module import sanitize_input
+from app import limiter
+from app.security.rate_limit import get_smart_visitor_id
+from flask_wtf.csrf import generate_csrf  # Import this
 import logging
 from datetime import datetime
 import time
@@ -34,6 +37,7 @@ user_last_activity = defaultdict(float)
 
 # ---------------- LOGIN / LOGOUT ----------------
 @bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute", key_func=get_smart_visitor_id)
 def login():
     if current_user.is_authenticated:
         if current_user.is_admin:
@@ -42,6 +46,7 @@ def login():
             return redirect(url_for("routes.dashboard"))
 
     if request.method == "GET":
+        # Remove the csrf_token parameter - Flask-WTF provides it globally
         return render_template("login.html")
 
     if request.method == "POST":
@@ -146,6 +151,7 @@ def cleanup_expired_sessions(timeout_seconds=600):
 
 ## Flask route to handle heartbeats (for js script)
 @bp.route("/api/heartbeat", methods=["POST"])
+@limiter.limit("20 per minute", key_func=get_smart_visitor_id)  # API endpoint protection
 def heartbeat():
     import time
     if not current_user.is_authenticated:

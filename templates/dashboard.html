@@ -102,6 +102,7 @@
         <li>
             <div class="todo-item">
                 <form action="{{ url_for('routes.toggle_todo', todo_id=todo.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input title="Mark as done" type="checkbox" name="done" {% if todo.done %}checked{% endif %}
                         onchange="this.form.submit()">
                 </form>
@@ -118,6 +119,7 @@
             <div class="actions">
                 <a href="{{ url_for('routes.edit', todo_id=todo.id) }}">Edit</a>
                 <form action="{{ url_for('routes.delete', todo_id=todo.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <a href="javascript:void(0)"
                         onclick="if(confirm('Are you sure?')) this.parentNode.submit()">Delete</a>
                 </form>
@@ -136,6 +138,7 @@
     <!-- Conditional task creation - only for admins -->
     {% if current_user.is_admin %}
     <form class="add-form" action="{{ url_for('routes.add') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="text" id="todo-input" name="todo" placeholder="Add a new task...">
         <div class="term-selection">
             <input type="checkbox" id="select-term-checkbox" name="has_date_range" onchange="toggleTermInputs()">

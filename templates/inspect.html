@@ -44,6 +44,7 @@
     <div class="actions">
         <a href="{{ url_for('routes.edit', todo_id=todo_id) }}" class="button-link">Edit Task</a>
         <form action="{{ url_for('routes.toggle_todo', todo_id=todo_id) }}" method="POST" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="button-complete">
                 {% if todo.done %}Mark as Incomplete{% else %}Mark as Complete{% endif %}
             </button>

@@ -3,6 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}Todo App{% endblock %}</title>
 
     <!-- Main stylesheet -->
@@ -31,23 +32,8 @@
     {% block content %}{% endblock %}
 
     <!-- Heartbeat script -->
-    <script>
-        function sendHeartbeat() {
-            // Only run if user is authenticated and page has focus
-            if (document.body.dataset.userAuthenticated === "true" && document.hasFocus()) {
-                fetch('/api/heartbeat', {
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                }).catch(function (error) {
-                    console.log('Heartbeat failed:', error);
-                });
-            }
-        }
-        // Send heartbeat immediately when page loads
-        sendHeartbeat();
-        // Then set interval for every 30 seconds
-        setInterval(sendHeartbeat, 30000);
-    </script>
+    <script src="{{ url_for('static', filename='utils/heartbeat.js') }}"></script>
+    <!-- Heartbeat script -->
     <script src="{{ url_for('static', filename='utils/flash.js') }}"></script>
     <script src="{{ url_for('static', filename='utils/msg.js') }}"></script>
 

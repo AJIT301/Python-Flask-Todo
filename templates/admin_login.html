@@ -8,6 +8,7 @@
 <div class="container login-container admin">
     <h2>Admin Login</h2>
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <!-- Keep the admin parameter in URL, don't use name="admin" for username -->
         <input type="hidden" name="admin" value="1">
         <input type="text" name="username" placeholder="Admin Username" value="{{ username }}" autocomplete="username">

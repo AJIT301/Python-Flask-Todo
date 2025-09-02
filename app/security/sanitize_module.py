@@ -4,7 +4,9 @@ import logging
 import os
 import re
 import unicodedata
-from html import escape as html_escape
+import html
+from html import unescape
+from urllib.parse import unquote_plus
 
 # === Logging Setup ===
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +35,7 @@ if not logger.handlers:
 # === Suspicious Patterns: (regex, severity, description) ===
 SUSPICIOUS_PATTERNS = [
     # === SQL Injection ===
-    (r"(?i)\b(select|insert|update|delete|drop|truncate|union)\b", 2, "SQL keyword"),
+    (r"(?i)\b(select|insert|update|delete|drop|truncate|create|alter|exec|execute)\b", 2, "SQL keyword"),
     (r"(?i)\b(select|union).+?(from|where|join)", 4, "SQL clause structure"),
     (r"(?i)('|\")\s*(or|and)\s*['\"]?(1|a|a')\s*=\s*['\"]?(1|a|a')", 4, "Classic SQLi tautology"),
     (r"(?i);(?:\s*(drop|delete|shutdown|exec|system|cmd))", 4, "Stacked query + dangerous command"),
@@ -44,10 +46,11 @@ SUSPICIOUS_PATTERNS = [
     (r"(?i)javascript:", 4, "JavaScript URI"),
     (r"(?i)on\w+\s*=", 3, "HTML event handler"),
     (r"(?i)<iframe|<img.*?onerror", 4, "Malicious iframe/img"),
+    (r"(?i)vbscript:", 3, "VBScript URI"),
 
     # === Command Injection ===
-    (r";\s*(rm|cat|ls|ps|whoami|nc|bash|sh)\b", 4, "Command injection"),
-    (r"(rm|cat|ls|ps|whoami|nc|bash|sh)\s*[-/]", 3, "Suspicious command with flags"),
+    (r";\s*(rm|cat|ls|ps|whoami|nc|bash|sh|wget|curl)\b", 4, "Command injection"),
+    (r"(rm|cat|ls|ps|whoami|nc|bash|sh|wget|curl)\s*[-/]", 3, "Suspicious command with flags"),
 
     # === Path Traversal ===
     (r"\.\./|\.\.\\", 3, "Path traversal"),
@@ -57,7 +60,19 @@ SUSPICIOUS_PATTERNS = [
     (r"[\"']", 1, "Quotes (low severity alone)"),
     (r"[;&|`$]", 2, "Shell metacharacters"),
 ]
+
 SUSPICIOUS_PATTERNS.sort(key=lambda x: x[1], reverse=True)
+
+
+def normalize_payload(text: str) -> str:
+    """
+    Normalize common encodings to detect obfuscated payloads.
+    """
+    # Decode URL encoding
+    text = unquote_plus(text)
+    # Decode HTML entities
+    text = unescape(text)
+    return text
 
 
 def calculate_total_score(text: str) -> tuple[int, list[tuple[str, int, str]]]:
@@ -67,17 +82,20 @@ def calculate_total_score(text: str) -> tuple[int, list[tuple[str, int, str]]]:
     if not isinstance(text, str) or not text.strip():
         return 0, []
 
+    # Normalize payload before scoring
+    normalized = normalize_payload(text)
+
     matched = []
     score = 0
 
     for pattern, severity, desc in SUSPICIOUS_PATTERNS:
-        if re.search(pattern, text, re.DOTALL):
+        if re.search(pattern, normalized, re.DOTALL | re.IGNORECASE):
             score += severity
             matched.append((pattern, severity, desc))
 
     # Contextual boost: SQL keyword + comment
-    has_sql_kw = any(re.search(p, text, re.I) for p in [r"\b(update|drop|select|insert|delete)\b"])
-    has_comment = bool(re.search(r"--|#|/\*", text))
+    has_sql_kw = any(re.search(p, normalized, re.I) for p in [r"\b(update|drop|select|insert|delete)\b"])
+    has_comment = bool(re.search(r"--|#|/\*", normalized))
     if has_sql_kw and has_comment:
         score += 2
         matched.append(("contextual_boost", 2, "-- + SQL keyword boost"))
@@ -91,7 +109,7 @@ def detect_script_mix(text: str) -> bool:
     Allows Latin with diacritics (e.g., Lithuanian: ąčęėįšųū).
     """
     cyrillic = re.compile(r"[\u0400-\u04FF]")
-    other_scripts = re.compile(r"[\u0370-\u03FF\u0530-\u058F]")
+    other_scripts = re.compile(r"[\u0370-\u03FF\u0530-\u058F\u0600-\u06FF]")
 
     has_cyrillic = bool(cyrillic.search(text))
     has_other_script = bool(other_scripts.search(text))
@@ -108,57 +126,64 @@ def sanitize_input(
     allow_unicode: bool = True,
     escape_html: bool = False,
     compress_whitespace: bool = True,
-    remove_specials: str = "balanced",  # Changed default from "none" to "balanced" or "strict"
+    remove_specials: str = "balanced",  # "none", "balanced", "strict"
     log_suspicious: bool = True,
+    max_length: int = 5000,  # Prevent DoS
+    context: dict = None,  # Optional metadata (e.g., IP, user)
 ) -> tuple[str, int, list[tuple[str, int, str]]]:
     """
-    Sanitizes input with heuristic scoring and optional cleanup.
+    Enhanced input sanitizer with scoring, normalization, and logging.
     """
     if not isinstance(text, str):
         return "", 0, []
+
+    # Truncate overly long inputs
+    if len(text) > max_length:
+        text = text[:max_length]
+        logger.warning(f"Input truncated to {max_length} chars")
+
     original_text = text.strip()
     if not original_text:
         return "", 0, []
 
-    # === 1. Calculate Score ===
-    total_score, matched_patterns = calculate_total_score(original_text)
+    # === 1. Normalize Payload ===
+    normalized_text = normalize_payload(original_text)
 
-    # === 2. Detect Mixed Scripts ===
-    if detect_script_mix(original_text):
+    # === 2. Calculate Score ===
+    total_score, matched_patterns = calculate_total_score(normalized_text)
+
+    # === 3. Detect Mixed Scripts ===
+    if detect_script_mix(normalized_text):
         total_score += 3
         matched_patterns.append(("mixed_script", 3, "Possible homoglyph attack (mixed scripts)"))
 
-    # === 3. Log Suspicious Input ===
+    # === 4. Log Suspicious Input ===
     if log_suspicious and total_score > 0:
         safe_log_text = (
-            repr(original_text)
+            repr(normalized_text)
             .replace("\\n", "\\\\n")
             .replace("\\r", "\\\\r")
             .replace("\\t", "\\\\t")
         )
-        logger.warning(
-            f"Suspicious input detected: {safe_log_text} | Score={total_score} | Matches={[desc for _, _, desc in matched_patterns]}"
-        )
+        log_msg = f"Suspicious input detected: {safe_log_text} | Score={total_score} | Matches={[desc for _, _, desc in matched_patterns]}"
+        if context:
+            log_msg += f" | Context={context}"
+        logger.warning(log_msg)
         for handler in logger.handlers:
             handler.flush()
 
-    # === 4. Sanitization Pipeline ===
+    # === 5. Sanitization Pipeline ===
     text = original_text
 
-    # Fixed Unicode handling - preserve Lithuanian characters
+    # Unicode handling
     if not allow_unicode:
-        # Only remove non-Latin characters, but preserve Latin Extended (includes Lithuanian)
-        # Keep Latin Basic (0000-007F), Latin-1 Supplement (0080-00FF), 
-        # Latin Extended-A (0100-017F), and Latin Extended-B (0180-024F)
         allowed_chars = []
         for char in text:
             code_point = ord(char)
-            # Allow basic Latin, Latin-1 supplement, and Latin extended (covers Lithuanian)
             if (code_point <= 0x024F) or char.isspace():
                 allowed_chars.append(char)
         text = ''.join(allowed_chars)
     else:
-        # Normalize Unicode but preserve composed characters (like Lithuanian letters)
         text = unicodedata.normalize("NFC", text)
 
     # Remove control characters
@@ -178,6 +203,6 @@ def sanitize_input(
             text = text.replace(char, '')
 
     if escape_html:
-        text = html_escape(text)
+        text = html.escape(text)
 
     return text, total_score, matched_patterns

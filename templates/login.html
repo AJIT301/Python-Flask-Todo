@@ -3,7 +3,7 @@
 {% block title %}Login panel - Todo App{% endblock %}
 
 {% block additional_styling %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -11,6 +11,8 @@
 <div class="container login-container">
     <h2>Login</h2>
     <form method="POST">
+        <!-- {{ csrf_token() }} -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="text" name="username" placeholder="Username" value="{{ username }}" autocomplete="username">
         <input type="password" name="password" placeholder="Password">
         <button type="submit">Login</button>

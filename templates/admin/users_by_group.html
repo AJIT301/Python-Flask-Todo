@@ -3,7 +3,7 @@
 {% block title %}Users by Group - Admin Dashboard{% endblock %}
 
 {% block additional_styling %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
 <div class="container dashboard-container">
     <section class="users-by-group-section">
         <h1>Users by Group</h1>
-        
+
         <div class="groups-overview">
             <div class="stats-summary">
                 <div class="stat-card">
@@ -30,37 +30,38 @@
             <div class="group-card">
                 <div class="group-header">
                     <h2 class="group-name">{{ get_group_display_name(group.name) }}</h2>
-                    <span class="group-member-count">{{ group.members|length }} member{% if group.members|length != 1 %}s{% endif %}</span>
+                    <span class="group-member-count">{{ group.members|length }} member{% if group.members|length != 1
+                        %}s{% endif %}</span>
                     <span class="group-status {% if group.is_active %}active{% else %}inactive{% endif %}">
                         {% if group.is_active %}Active{% else %}Inactive{% endif %}
                     </span>
                 </div>
-                
+
                 {% if group.description %}
                 <div class="group-description">
                     <p>{{ group.description }}</p>
                 </div>
                 {% endif %}
-                
+
                 <div class="group-members">
                     {% if group.members %}
-                        <ul class="members-list">
-                            {% for user in group.members %}
-                            <li class="member-item {% if user.is_admin %}admin-member{% endif %}">
-                                <div class="member-info">
-                                    <span class="member-username">{{ user.username }}</span>
-                                    <span class="member-email">{{ user.email }}</span>
-                                </div>
-                                {% if user.is_admin %}
-                                <span class="member-role admin-badge">Admin</span>
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                        </ul>
+                    <ul class="members-list">
+                        {% for user in group.members %}
+                        <li class="member-item {% if user.is_admin %}admin-member{% endif %}">
+                            <div class="member-info">
+                                <span class="member-username">{{ user.username }}</span>
+                                <span class="member-email">{{ user.email }}</span>
+                            </div>
+                            {% if user.is_admin %}
+                            <span class="member-role admin-badge">Admin</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
                     {% else %}
-                        <div class="no-members">
-                            <p>No members in this group</p>
-                        </div>
+                    <div class="no-members">
+                        <p>No members in this group</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -73,12 +74,12 @@
 {% block scripts %}
 <script>
     // Optional: Add any interactive features for group management
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Add expand/collapse functionality for groups
         const groupHeaders = document.querySelectorAll('.group-header');
         groupHeaders.forEach(header => {
             header.style.cursor = 'pointer';
-            header.addEventListener('click', function() {
+            header.addEventListener('click', function () {
                 const groupCard = this.closest('.group-card');
                 const membersList = groupCard.querySelector('.group-members');
                 membersList.classList.toggle('collapsed');
