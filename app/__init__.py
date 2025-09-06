@@ -29,6 +29,7 @@ login_manager = LoginManager()
 limiter = Limiter(key_func=get_remote_address)
 csrf = CSRFProtect()  # Initialize CSRF protection
 
+
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
 
@@ -198,7 +199,7 @@ def create_app():
         app.logger.warning(f"CSRF error: {reason}")
         return {
             "error": "CSRF token missing or invalid",
-            "message": "Please refresh the page and try again"
+            "message": "Please refresh the page and try again",
         }, 400
 
     # CLI commands
@@ -220,5 +221,36 @@ def create_app():
 
     # Final startup log
     app.logger.info("[SUCCESS] Todo App has started")
+
+    # --- Add CSP Header ---
+    @app.after_request
+    def add_security_headers(response):
+        # --- CSP Policy (ensure frame-ancestors is present) ---
+        csp_policy = (
+            f"default-src 'self'; "
+            f"script-src 'self'; " # Adjust as needed
+            f"style-src 'self' 'unsafe-inline'; " # Adjust as needed
+            f"img-src 'self' ; "
+            f"font-src 'self'; "
+            f"connect-src 'self'; "
+            f"frame-ancestors 'none'; " # Modern ClickJacking protection
+            f"base-uri 'self'; "
+            f"form-action 'self'; "
+            # Optional reporting:
+            # "report-uri /csp-report;"
+            f"object-src 'none'; " # <--- Add this line
+        )
+        response.headers['Content-Security-Policy'] = csp_policy
+
+        # --- Additional Security Headers ---
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        # --- Add X-Frame-Options for older browser compatibility ---
+        # Use 'DENY' to match 'frame-ancestors 'none';' or 'SAMEORIGIN' to match 'frame-ancestors 'self';'
+        response.headers['X-Frame-Options'] = 'DENY' # <--- Add this line
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        # If using HTTPS, set HSTS (often better done by web server/nginx):
+        # response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+        return response
 
     return app

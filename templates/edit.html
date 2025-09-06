@@ -36,12 +36,6 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-    function toggleEditTermInputs() {
-        var checkbox = document.getElementById('edit-term-checkbox');
-        var termInputs = document.getElementById('edit-term-inputs');
-        termInputs.classList.toggle('hidden', !checkbox.checked);
-    }
-</script>
+{% block additional_scripts %}
+<script src="{{ url_for('static', filename='utils/edit.js') }}"></script>
 {% endblock %}

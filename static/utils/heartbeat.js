@@ -29,7 +29,7 @@ function sendHeartbeat() {
             });
     }
 }
-// Send heartbeat immediately when page loads (if conditions are met)
+// Send heartbeat immediately when page loads
 sendHeartbeat();
 // Then set interval for every 30 seconds
 setInterval(sendHeartbeat, 30000);
