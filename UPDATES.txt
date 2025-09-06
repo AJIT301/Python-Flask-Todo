@@ -1,3 +1,30 @@
+Update Log - September 6, 2025
+
+🛡️ Security Implementation
+Content Security Policy (CSP)
+🔹 Implemented comprehensive CSP header via @app.after_request.
+🔹 Configured directives: default-src, script-src (set to 'self'), style-src, img-src, font-src, connect-src, frame-ancestors (set to 'none'), base-uri, form-action, object-src (set to 'none').
+🔹 Removed 'unsafe-inline' from script-src and style-src where possible.
+🔹 Resolved ZAP scan warnings related to CSP configuration.
+
+🔹 Security Headers
+🔹 Added essential security headers: X-Content-Type-Options: nosniff, X-Frame-Options: DENY, X-XSS-Protection: 1; mode=block.
+🔹 Verified headers are correctly sent in HTTP responses.
+🔹 Resolved ZAP scan warnings for missing security headers.
+
+🔹 CSRF Protection
+🔹 Fixed CSRF token handling for AJAX API calls (e.g., /api/heartbeat).
+🔹 Ensured JavaScript fetch requests include the X-CSRFToken header.
+🔹 Resolved CSRF error warnings in application logs and browser console.
+
+⏱️ Client-Side Enhancements
+🔹 Eliminated all inline JavaScript from templates.
+🔹 Moved all JavaScript logic (heartbeat, admin nav effects) to external .js files.
+🔹 Updated templates to load scripts via <script src="..."> tags.
+🔹 Ensured strict CSP compatibility (script-src 'self';).
+
+----------------------------------------
+
 Update Log - September 2, 2025
 
 🛡️ Security Implementation
