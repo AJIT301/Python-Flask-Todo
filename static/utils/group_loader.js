@@ -1,12 +1,23 @@
 async function loadGroups() {
+    //added console_debug for getting user group data from database
+    //default = false
+    //helps to identify problems with fetching data.
+    
+    const console_debug = false;
     try {
-        console.log('Loading groups from API...');
+        if (console_debug) {
+            console.log('Loading groups from API...');
+        }
+
         const response = await fetch('/api/registration/groups');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const groups = await response.json();
-        console.log('Groups received:', groups);
+
+        if (console_debug) {
+            console.log('Groups received:', groups);
+        }
 
         const select = document.querySelector('select[name="group"]');
         select.innerHTML = '<option value="" disabled selected>Choose your group</option>';
@@ -16,7 +27,9 @@ async function loadGroups() {
             // Use lowercase for value to match DB, but nice display name
             option.value = group.name.toLowerCase();  // lowercase for DB match
             option.textContent = group.description || group.name;  // nice display
-            console.log(`Adding option: value="${group.name.toLowerCase()}", text="${group.description}"`);
+            if (console_debug) {
+                console.log(`Adding option: value="${group.name.toLowerCase()}", text="${group.description}"`);
+            }
             select.appendChild(option);
         });
     } catch (error) {

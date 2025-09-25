@@ -142,34 +142,6 @@ def dashboard():
         )
 
 
-def get_user_deadlines(user, current_time):
-    """Get deadlines assigned to a user"""
-    try:
-        # Import here to avoid circular imports
-        from app.models import Deadline
-
-        # Option 1: If you have a direct user-deadline relationship
-        # user_deadlines = Deadline.query.join(Deadline.assigned_users).filter(
-        #     Deadline.assigned_users.contains(user),
-        #     Deadline.is_active == True
-        # ).all()
-
-        # Option 2: If deadlines are assigned by group
-        # group_deadlines = Deadline.query.join(Deadline.assigned_groups).filter(
-        #     Deadline.assigned_groups.any(id__in=[g.id for g in user.groups]),
-        #     Deadline.is_active == True
-        # ).all()
-
-        # Option 3: If you have an assignment table (recommended)
-        # This assumes you'll create an assignment system later
-
-        # For now, let's return sample data to test the UI
-        # You'll replace this with actual deadline fetching logic
-        return []
-
-    except Exception as e:
-        logger.error(f"Error fetching user deadlines: {e}")
-        return []
 
 
 def get_user_deadlines(user, current_time):
@@ -207,7 +179,7 @@ def get_random_captcha():
 
 
 @bp.route("/api/registration/groups")
-@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 def get_registration_groups():
     try:
         # Only get active groups
@@ -223,7 +195,7 @@ def get_registration_groups():
 
 
 @bp.route("/register", methods=["GET", "POST"])
-@limiter.limit("5 per hour", key_func=get_smart_visitor_id)
+@limiter.limit("25 per hour", key_func=get_smart_visitor_id)
 def register():
     if request.method == "GET":
         captcha_question, captcha_expected = get_random_captcha()
@@ -479,7 +451,7 @@ def add():
 
 
 @bp.route("/edit/<todo_id>", methods=["GET", "POST"])
-@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def edit(todo_id):
     """Edit an existing todo"""
@@ -530,7 +502,7 @@ def edit(todo_id):
 
 
 @bp.route("/toggle/<todo_id>", methods=["POST"])
-@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
+@limiter.limit("100 per hour", key_func=get_smart_visitor_id)
 @login_required
 def toggle_todo(todo_id):
     """Toggle todo completion status"""
@@ -555,7 +527,7 @@ def toggle_todo(todo_id):
 
 
 @bp.route("/delete/<todo_id>", methods=["POST"])
-@limiter.limit("20 per hour", key_func=get_smart_visitor_id)
+@limiter.limit("50 per hour", key_func=get_smart_visitor_id)
 @login_required
 def delete(todo_id):
     """Delete a todo"""
@@ -655,7 +627,7 @@ def api_stats():
 
 
 @bp.route("/bulk-delete", methods=["POST"])
-@limiter.limit("5 per hour", key_func=get_smart_visitor_id)
+@limiter.limit("10 per hour", key_func=get_smart_visitor_id)
 def bulk_delete():
     """Delete multiple todos at once"""
     try:

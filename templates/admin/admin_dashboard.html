@@ -22,8 +22,7 @@
                 <div class="todo-item">
                     <form action="{{ url_for('routes.toggle_todo', todo_id=todo.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input title="Mark as done" type="checkbox" name="done" {% if todo.done %}checked{% endif %}
-                            onchange="this.form.submit()">
+                        <input title="Mark as done" type="checkbox" name="done" {% if todo.done %}checked{% endif %}>
                     </form>
                     <span class="{% if todo.done %}completed{% else %}incomplete{% endif %}">{{ todo.task }}</span>
                 </div>
@@ -36,8 +35,7 @@
                     <a href="{{ url_for('routes.edit', todo_id=todo.id) }}">Edit</a>
                     <form action="{{ url_for('routes.delete', todo_id=todo.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <a href="javascript:void(0)"
-                            onclick="if(confirm('Are you sure?')) this.parentNode.submit()">Delete</a>
+                        <a href="javascript:void(0)" class="delete-confirm">Delete</a>
                     </form>
                     <a href="{{ url_for('routes.inspect', todo_id=todo.id) }}">Inspect</a>
                 </div>
@@ -53,6 +51,6 @@
 
 {% endblock %}
 
-{% block scripts %}
-
+{% block additional_scripts %}
+<script src="{{ url_for('static', filename='utils/dashboard.js') }}"></script>
 {% endblock %}

@@ -129,19 +129,19 @@ body.admin-layout {
 
 .container.dashboard-container li {
     padding: 15px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid    rgba(255, 255, 255, 0.5);
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(95, 93, 93, 0.2);
     border-radius: 6px;
     margin-bottom: 8px;
     transition: background-color 0.3s ease;
 }
 
 .container.dashboard-container li:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .todo-item {
@@ -198,8 +198,10 @@ body.admin-layout {
 
 .actions a {
     color: #64b5f6;
+    border: 1px solid rgba(100, 181, 246, 0.8);
     text-decoration: none;
     font-size: 0.9em;
+    font-weight: 600;
     padding: 6px 12px;
     border-radius: 4px;
     transition: all 0.2s ease;
@@ -207,7 +209,7 @@ body.admin-layout {
 }
 
 .actions a:hover {
-    background: rgba(100, 181, 246, 0.2);
+    background: rgba(100, 181, 246, 0.3);
     text-decoration: underline;
     transform: translateY(-1px);
 }
@@ -217,6 +219,8 @@ body.admin-layout {
 }
 .actions form a {
     color: #f44336;
+    font-weight: 600;
+    border: 1px solid rgba(244, 67, 54, 0.8);
     background: rgba(244, 67, 54, 0.1);
 }
 
@@ -227,11 +231,13 @@ body.admin-layout {
 
 .actions a[href*="inspect"] {
     color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 1);
+    font-weight: 600;
     background: rgba(76, 175, 80, 0.1);
 }
 
 .actions a[href*="inspect"]:hover {
-    background: rgba(76, 175, 80, 0.2);
+    background: rgba(76, 175, 80, 0.3);
 }
 
 /* Add Form */

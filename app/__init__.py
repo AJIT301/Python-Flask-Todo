@@ -46,34 +46,29 @@ def create_app():
     if not all([user, password, host, port, database]):
         raise RuntimeError("Database environment variables are not fully set.")
 
-    encoded_password = quote_plus(password)
+    # Fix Pylance warning: ensure password is not None before quote_plus
+    encoded_password = quote_plus(password) if password else ""
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         f"postgresql://{user}:{encoded_password}@{host}:{port}/{database}"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)  # Initialize CSRF protection
 
-    # Configure rate limiter
-    limiter.key_func = get_remote_address
-    limiter.default_limits = ["200 per day", "50 per hour"]
-    limiter.storage_uri = "memory://"
-    limiter.strategy = "fixed-window"
-    limiter.headers_enabled = True
-    limiter.header_name_mapping = {
-        "limit": "X-RateLimit-Limit",
-        "remaining": "X-RateLimit-Remaining",
-        "reset": "X-RateLimit-Reset",
-    }
+    # Configure rate limiter using app.config (Flask-Limiter v3+ API)
+    app.config['RATELIMIT_DEFAULT'] = "200 per day, 50 per hour"  # Comma-separated string
+    app.config['RATELIMIT_STORAGE_URI'] = "memory://"
+    app.config['RATELIMIT_STRATEGY'] = "fixed-window"
+    app.config['RATELIMIT_HEADERS_ENABLED'] = True
 
     # Initialize the limiter with the app
     limiter.init_app(app)
 
     # Configure login manager
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "auth.login"  # type: ignore  # Pylance false positive - this is correct Flask-Login usage
     login_manager.login_message = "Please log in to access this page."
     login_manager.login_message_category = "info"
 

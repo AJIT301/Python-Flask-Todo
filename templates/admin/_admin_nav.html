@@ -2,13 +2,20 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_nav.css') }}">
 <div class="dashboard-nav-wrapper">
     <nav class="dashboard-nav">
-        <ul>
-            <li><a href="{{ url_for('admin.add_todo') }}">Add Task</a></li>
-            <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('admin.show_all_users') }}">Show All Users</a></li>
-            <li><a href="{{ url_for('admin.users_by_group') }}">Show Users by Group</a></li>
-            <li><a href="{{ url_for('admin.manage_deadlines') }}">Manage Deadlines</a></li>
-        </ul>
+        <div class="nav-left">
+            <ul>
+                <li><a href="{{ url_for('admin.add_todo') }}">Add Task</a></li>
+                <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.show_all_users') }}">Show All Users</a></li>
+                <li><a href="{{ url_for('admin.users_by_group') }}">Show Users by Group</a></li>
+                <li><a href="{{ url_for('admin.manage_deadlines') }}">Manage Deadlines</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li class="logoutadmin"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </div>
     </nav>
 </div>
 

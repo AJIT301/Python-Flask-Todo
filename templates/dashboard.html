@@ -14,13 +14,13 @@
     <div class="deadline-modal-content">
         <div class="deadline-modal-header">
             <h3 id="modalDeadlineTitle">Deadline Details</h3>
-            <span class="close-modal" onclick="closeDeadlineModal()">&times;</span>
+            <span class="close-modal">&times;</span>
         </div>
         <div class="deadline-modal-body" id="modalDeadlineContent">
             <!-- Content will be loaded dynamically -->
         </div>
         <div class="deadline-modal-footer">
-            <button onclick="closeDeadlineModal()" class="btn btn-secondary">Close</button>
+            <button class="btn btn-secondary">Close</button>
         </div>
     </div>
 </div>
@@ -38,7 +38,11 @@
             <span class="deadline-title">{{ deadline.title }}</span>
             <div class="deadline-simple-actions">
                 <a href="javascript:void(0)" class="inspect-deadline-btn"
-                    onclick="openDeadlineModal({{ deadline.id }}, '{{ deadline.title|escapejs }}', '{{ deadline.description|escapejs if deadline.description else '' }}', '{{ deadline.deadline_date|datetime_british }}', '{{ deadline.created_by.username|escapejs }}')">Inspect</a>
+                    data-deadline-id="{{ deadline.id }}"
+                    data-title="{{ deadline.title|escapejs }}"
+                    data-description="{{ deadline.description|escapejs if deadline.description else '' }}"
+                    data-due-date="{{ deadline.deadline_date|datetime_british }}"
+                    data-created-by="{{ deadline.created_by.username|escapejs }}">Inspect</a>
             </div>
         </div>
         {% endfor %}
@@ -52,8 +56,7 @@
             <div class="todo-item">
                 <form action="{{ url_for('routes.toggle_todo', todo_id=todo.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input title="Mark as done" type="checkbox" name="done" {% if todo.done %}checked{% endif %}
-                        onchange="this.form.submit()">
+                    <input title="Mark as done" type="checkbox" name="done" {% if todo.done %}checked{% endif %}>
                 </form>
                 <span class="{% if todo.done %}completed{% else %}incomplete{% endif %}">{{ todo.task }}</span>
             </div>
@@ -69,8 +72,7 @@
                 <a href="{{ url_for('routes.edit', todo_id=todo.id) }}">Edit</a>
                 <form action="{{ url_for('routes.delete', todo_id=todo.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <a href="javascript:void(0)"
-                        onclick="if(confirm('Are you sure?')) this.parentNode.submit()">Delete</a>
+                    <a href="javascript:void(0)" class="delete-confirm">Delete</a>
                 </form>
                 <a href="{{ url_for('routes.inspect', todo_id=todo.id) }}">Inspect</a>
             </div>
@@ -90,7 +92,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="text" id="todo-input" name="todo" placeholder="Add a new task...">
         <div class="term-selection">
-            <input type="checkbox" id="select-term-checkbox" name="has_date_range" onchange="toggleTermInputs()">
+            <input type="checkbox" id="select-term-checkbox" name="has_date_range">
             <label for="select-term-checkbox">Select term</label>
         </div>
         <div id="term-inputs" class="display">

@@ -3,20 +3,26 @@
 /* --------login.HTML START----------- */
 /* --------login.HTML START----------- */
 
-
 .container.login-container a {
+    padding:0;
+    margin:0;
     text-decoration: none;
-    color: #007bff;
+    color: #7af1c4;
+    transition: all 0.2s ease;
+}
+
+.container.login-container a:hover {
+    color: #3f9fd1;
+    transform: scale(1.02)
 }
 
 
 .container.login-container {
     max-width: 350px;
     width: 100%;
-    backdrop-filter: blur(1px);
     -webkit-backdrop-filter: blur(1px);
+    backdrop-filter: blur(1px);
     border-radius: 10px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -81,7 +87,7 @@
     border: none;
     font-size: 16px;
     cursor: pointer;
-    background: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+    background: radial-gradient(100% 100% at 100% 0, #5adbff9d 0, #5468ff9a 100%);
     color: #fff;
     transition: transform 0.15s, box-shadow 0.15s;
 }
@@ -103,13 +109,14 @@
 }
 
 .register-link {
-    color: #5adaff;
+
+    color: #5afff7;
     /* bright, visible color */
     text-decoration: underline;
     font-weight: 600;
     margin-left: 5px;
     /* space from the preceding text */
-    transition: color 0.2s;
+    transition: color 0.2s ease;
 }
 
 .register-link:hover {

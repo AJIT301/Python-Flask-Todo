@@ -27,17 +27,75 @@ function closeDeadlineModal() {
     modal.classList.remove('show');
     document.body.style.overflow = 'auto';
 }
+
+// Initialize event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal close button
+    const closeBtn = document.querySelector('.close-modal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeDeadlineModal);
+    }
+
+    // Modal footer close button
+    const footerCloseBtn = document.querySelector('.deadline-modal-footer .btn-secondary');
+    if (footerCloseBtn) {
+        footerCloseBtn.addEventListener('click', closeDeadlineModal);
+    }
+
+    // Deadline inspect buttons
+    document.querySelectorAll('.inspect-deadline-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const deadlineId = this.dataset.deadlineId;
+            const title = this.dataset.title;
+            const description = this.dataset.description;
+            const dueDate = this.dataset.dueDate;
+            const createdBy = this.dataset.createdBy;
+            openDeadlineModal(deadlineId, title, description, dueDate, createdBy);
+        });
+    });
+
+    // Delete confirmation links
+    document.querySelectorAll('.delete-confirm').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!confirm('Are you sure?')) {
+                e.preventDefault();
+                return false;
+            }
+            // If confirmed, submit the parent form
+            const form = this.closest('form');
+            if (form) {
+                form.submit();
+            }
+        });
+    });
+
+    // Term inputs toggle
+    const termCheckbox = document.getElementById('select-term-checkbox');
+    if (termCheckbox) {
+        termCheckbox.addEventListener('change', toggleTermInputs);
+    }
+
+    // Todo checkboxes - submit form when changed
+    document.querySelectorAll('input[type="checkbox"][name="done"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const form = this.closest('form');
+            if (form) {
+                form.submit();
+            }
+        });
+    });
+});
+
 // Close modal when clicking outside
-window.onclick = function (event) {
+window.addEventListener('click', function (event) {
     const modal = document.getElementById('deadlineModal');
     if (event.target == modal) {
         closeDeadlineModal();
     }
-}
+});
 
 // Close modal with Escape key
-document.onkeydown = function (evt) {
-    evt = evt || window.event;
+document.addEventListener('keydown', function (evt) {
     var isEscape = false;
     if ("key" in evt) {
         isEscape = (evt.key === "Escape" || evt.key === "Esc");
@@ -47,4 +105,4 @@ document.onkeydown = function (evt) {
     if (isEscape) {
         closeDeadlineModal();
     }
-};
+});

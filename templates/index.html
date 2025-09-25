@@ -7,16 +7,197 @@
 {% endblock %}
 {% block content %}
 
-<div class="admin-nav">
-    <a class="admin-panel" href="{{ url_for('auth.login') }}?admin=1">Admin area</a>
-</div>
-<div class="container index-container">
-    <h1>Welcome to Todo App</h1>
-
-    <div class="button-group">
-        <a class="user-area" href="{{ url_for('auth.login') }}">User Login</a>
-        <a class="user-area" href="{{ url_for('routes.register') }}">Register</a>
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <h2>TodoApp</h2>
+        </div>
+        <div class="nav-links">
+            <a href="#features" class="link-primary">Features</a>
+            <a href="#feature1" class="link-primary">Feature1</a>
+            <a href="#feature2" class="link-primary">Feature2</a>
+            <a href="#feature3" class="link-primary">Feature3</a>
+        </div>
+        <div class="admin-nav">
+            <a href="{{ url_for('auth.login') }}" class="link-primary">User Login</a>
+            <a href="{{ url_for('routes.register') }}" class="btn-primary">Register</a>
+            <a href="{{ url_for('auth.login') }}?admin=1" class="admin-panel">Admin</a>
+        </div>
     </div>
+</nav>
 
-</div>
+<!-- Hero Section - Full Page -->
+<section class="hero-section">
+
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">Stay Organized, Stay Productive</h1>
+            <p class="hero-subtitle">
+                Transform your workflow with our powerful task management platform.
+                Create, assign, and track todos with ease. Whether you're managing personal tasks
+                or collaborating with your team, our app provides the tools you need to stay on top of everything.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('routes.register') }}" class="btn-primary-large">Get Started Free</a>
+                <a href="#features" class="btn-secondary-large">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section">
+    <div class="features-container">
+        <div class="section-header">
+            <h2>Powerful Features for Better Productivity</h2>
+            <p>Everything you need to manage tasks efficiently</p>
+        </div>
+
+        <div class="features-grid">
+            <a href="#feature1" class="feature-item">
+                <div class="feature-icon"></div>
+                <h3>Smart Task Management</h3>
+                <p>Create, edit, and organize your todos with intuitive controls and deadline tracking.</p>
+            </a>
+            <a href="#feature2" class="feature-item">
+                <div class="feature-icon"></div>
+                <h3>Team Collaboration</h3>
+                <p>Assign tasks to team members or groups, perfect for project management and coordination.</p>
+            </a>
+            <a href="#feature3" class="feature-item">
+                <div class="feature-icon"></div>
+                <h3>Secure & Reliable</h3>
+                <p>Built with security in mind, featuring user authentication, input validation, and data protection.
+                </p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Detail Sections -->
+<section id="feature1" class="feature-detail">
+    <div class="feature-detail-container">
+        <div class="feature-text">
+            <h2>Smart Task Management</h2>
+            <p>Our intelligent task management system allows you to create, edit, and organize your todos with unparalleled ease. Features include intuitive controls, advanced deadline tracking, priority settings, and smart categorization to keep you on top of your productivity game.</p>
+            <p>With real-time updates, progress tracking, and automated reminders, managing your tasks has never been more efficient. Whether you're handling personal projects or professional deadlines, our system adapts to your workflow.</p>
+        </div>
+        <div class="feature-image">
+            <div class="slider">
+                <div class="slides">
+                    <div class="slide fade">
+                        <img src="{{ url_for('static', filename='images/taskmanage1.png') }}" alt="Smart Task Management Screenshot 1">
+                    </div>
+                    <div class="slide fade">
+                        <img src="{{ url_for('static', filename='images/taskmanage2.png') }}" alt="Smart Task Management Screenshot 2">
+                    </div>
+                    <div class="slide fade">
+                        <img src="{{ url_for('static', filename='images/taskmanage3.png') }}" alt="Smart Task Management Screenshot 3">
+                    </div>
+                </div>
+                <button class="prev"><</button>
+                <button class="next">></button>
+                <div class="dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="feature2" class="feature-detail">
+    <div class="feature-detail-container">
+        <div class="feature-image">
+            <div class="slider">
+                <div class="slides">
+                    <div class="slide fade">
+                        <img src="{{ url_for('static', filename='images/teamcolab1.png') }}" alt="Team Collaboration Screenshot 1">
+                    </div>
+                    <div class="slide fade">
+                        <img src="{{ url_for('static', filename='images/teamcolab2.png') }}" alt="Team Collaboration Screenshot 2">
+                    </div>
+                    <div class="slide fade">
+                        <img src="{{ url_for('static', filename='images/teamcolab3.png') }}" alt="Team Collaboration Screenshot 3">
+                    </div>
+                </div>
+                <button class="prev"><</button>
+                <button class="next">></button>
+                <div class="dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </div>
+        <div class="feature-text">
+            <h2>Team Collaboration</h2>
+            <p>Enhance your team's productivity with our advanced collaboration tools. Assign tasks to team members or groups, track progress in real-time, and coordinate seamlessly across projects. Perfect for project management and team coordination.</p>
+            <p>Features include group assignments, progress sharing, collaborative editing, and comprehensive reporting to keep everyone aligned and productive.</p>
+        </div>
+    </div>
+</section>
+
+<section id="feature3" class="feature-detail">
+    <div class="feature-detail-container">
+        <div class="feature-text">
+            <h2>Secure & Reliable</h2>
+            <p>Built with enterprise-grade security in mind, our platform features comprehensive user authentication, advanced input validation, and robust data protection measures. Your data is encrypted, backed up regularly, and protected against unauthorized access.</p>
+            <p>With multi-factor authentication, secure API endpoints, and regular security audits, you can trust that your information is safe and your workflows are reliable.</p>
+        </div>
+        <div class="feature-image">
+            <div class="security-slider">
+                <div class="security-slides">
+                    <div class="security-slide active">
+                        <div class="security-icon">🔒</div>
+                        <h3>Authentication</h3>
+                        <p>Secure user authentication with password hashing and session management</p>
+                    </div>
+                    <div class="security-slide">
+                        <div class="security-icon">🛡️</div>
+                        <h3>CSRF Protection</h3>
+                        <p>Cross-Site Request Forgery protection on all forms and endpoints</p>
+                    </div>
+                    <div class="security-slide">
+                        <div class="security-icon">🚦</div>
+                        <h3>Rate Limiting</h3>
+                        <p>Intelligent rate limiting to prevent abuse and ensure fair usage</p>
+                    </div>
+                    <div class="security-slide">
+                        <div class="security-icon">🔐</div>
+                        <h3>Content Security Policy</h3>
+                        <p>CSP headers to prevent XSS attacks and unauthorized script execution</p>
+                    </div>
+                    <div class="security-slide">
+                        <div class="security-icon">🔍</div>
+                        <h3>Input Validation</h3>
+                        <p>Comprehensive input sanitization and validation on all user inputs</p>
+                    </div>
+                    <div class="security-slide">
+                        <div class="security-icon">🔑</div>
+                        <h3>Encryption</h3>
+                        <p>Data encryption and secure communication protocols</p>
+                    </div>
+                </div>
+                <button class="security-prev"><</button>
+                <button class="security-next">></button>
+                <div class="security-dots">
+                    <span class="security-dot active"></span>
+                    <span class="security-dot"></span>
+                    <span class="security-dot"></span>
+                    <span class="security-dot"></span>
+                    <span class="security-dot"></span>
+                    <span class="security-dot"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+{% block additional_scripts %}
+<script src="{{ url_for('static', filename='utils/smoothscroll.js') }}"></script>
+<script src="{{ url_for('static', filename='utils/slider.js') }}"></script>
 {% endblock %}
