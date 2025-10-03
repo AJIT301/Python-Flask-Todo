@@ -13,6 +13,7 @@ services:
     environment:
       - FLASK_ENV=development
       - DB_HOST=db
+      - GUNICORN_CMD_ARGS=--timeout 60 --workers 2 --worker-class sync
     depends_on:
       db:
         condition: service_healthy

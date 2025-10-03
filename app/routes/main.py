@@ -31,6 +31,7 @@ from app.security.validation import (
     validate_captcha,
 )
 import random
+from app.captcha import get_random_visual_captcha, validate_visual_captcha
 
 logger = logging.getLogger("InputSanitizer")
 logger.setLevel(logging.WARNING)
@@ -116,7 +117,6 @@ def dashboard():
         todos = user_todos.union(group_todos).order_by(Todo.created_at.desc()).all()
 
         # Get user's deadlines
-        from datetime import datetime
 
         now = datetime.now()
 
@@ -140,8 +140,6 @@ def dashboard():
             user_deadlines=[],
             now=datetime.now(),
         )
-
-
 
 
 def get_user_deadlines(user, current_time):
@@ -198,11 +196,10 @@ def get_registration_groups():
 @limiter.limit("25 per hour", key_func=get_smart_visitor_id)
 def register():
     if request.method == "GET":
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     print(f"🚨 DEBUG REGISTRATION:")
@@ -219,8 +216,8 @@ def register():
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "").strip()
     group_name = request.form.get("group", "")
+    captcha_id = request.form.get("captcha_id", "")
     user_answer = request.form.get("captcha_answer", "").strip()
-    expected_answer = request.form.get("captcha_expected", "").strip()
 
     # Sanitize ALL inputs
     safe_username, username_score, username_matches = sanitize_input(username)
@@ -269,75 +266,70 @@ def register():
     is_valid, message = validate_username(safe_username)
     if not is_valid:
         flash(f"⚠️ {message}", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     is_valid, message = validate_email(safe_email)
     if not is_valid:
         flash(f"⚠️ {message}", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     is_valid, message = validate_password(safe_password)
     if not is_valid:
         flash(f"⚠️ {message}", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     is_valid, message = validate_group(safe_group)
     if not is_valid:
         flash(f"⚠️ {message}", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
-    is_valid, message = validate_captcha(safe_captcha, expected_answer)
-    if not is_valid:
-        flash(f"⚠️ {message}", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+    # Validate CAPTCHA
+    if not validate_visual_captcha(captcha_id, safe_captcha):
+        flash("Invalid CAPTCHA. Please try again.", "error")
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     # Check existing users
     if User.query.filter_by(username=safe_username).first():
         flash("⚠️ Username already exists.", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     if User.query.filter_by(email=safe_email).first():
         flash("⚠️ Email already registered.", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     # Find group - EMERGENCY DEBUG
     print(f"🔍 FORM SENT: '{group_name}'")
     print(f"🔍 DB HAS: {[g.name for g in UserGroup.query.all()]}")
+
+    user_group = None
 
     # Try EVERYTHING
     print(f"🔍 FORM SENT: '{group_name}'")
@@ -360,11 +352,10 @@ def register():
 
     if not user_group:
         flash("⚠️ Invalid group selected.", "error")
-        captcha_question, captcha_expected = get_random_captcha()
+        visual_captcha = get_random_visual_captcha()
         return render_template(
             "register.html",
-            captcha_question=captcha_question,
-            captcha_expected=captcha_expected,
+            visual_captcha=visual_captcha,
         )
 
     # Create user
@@ -390,8 +381,14 @@ def add():
             flash("Maximum number of todos reached", "error")
             return redirect(url_for("routes.dashboard"))
 
+        # Get and validate input
+        todo_input = request.form.get("todo")
+        if not todo_input:
+            flash("Todo text is required", "error")
+            return redirect(url_for("routes.dashboard"))
+
         # Sanitize input
-        safe_text, score, matches = sanitize_input(request.form.get("todo"))
+        safe_text, score, matches = sanitize_input(todo_input)
         if score >= 5:
             flash("Blocked: suspicious content detected", "error")
             return redirect(url_for("routes.dashboard"))
@@ -459,7 +456,13 @@ def edit(todo_id):
         todo = Todo.query.get_or_404(todo_id)
 
         if request.method == "POST":
-            new_task, score, matches = sanitize_input(request.form.get("todo"))
+            # Get and validate input
+            todo_input = request.form.get("todo")
+            if not todo_input:
+                flash("Todo text is required", "error")
+                return render_template("edit.html", todo=todo, todo_id=todo_id)
+
+            new_task, score, matches = sanitize_input(todo_input)
 
             if score >= 5:
                 flash("Blocked: suspicious content detected", "error")
@@ -625,30 +628,28 @@ def api_stats():
         logger.error(f"Database error getting stats: {e}")
         return jsonify({"error": "Error fetching statistics"}), 500
 
+    # @bp.route("/bulk-delete", methods=["POST"])
+    # @limiter.limit("10 per hour", key_func=get_smart_visitor_id)
+    # def bulk_delete():
+    #     """Delete multiple todos at once"""
+    #     try:
+    #         todo_ids = request.json.get("todo_ids", [])
 
-@bp.route("/bulk-delete", methods=["POST"])
-@limiter.limit("10 per hour", key_func=get_smart_visitor_id)
-def bulk_delete():
-    """Delete multiple todos at once"""
-    try:
-        todo_ids = request.json.get("todo_ids", [])
+    #         if not todo_ids:
+    #             return jsonify({"error": "No todo IDs provided"}), 400
 
-        if not todo_ids:
-            return jsonify({"error": "No todo IDs provided"}), 400
+    #         deleted_count = Todo.query.filter(Todo.id.in_(todo_ids)).delete(
+    #             synchronize_session=False
+    #         )
+    #         db.session.commit()
 
-        deleted_count = Todo.query.filter(Todo.id.in_(todo_ids)).delete(
-            synchronize_session=False
-        )
-        db.session.commit()
-
-        return jsonify(
-            {
-                "message": f"Successfully deleted {deleted_count} todos",
-                "deleted_count": deleted_count,
-            }
-        )
-
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Database error in bulk delete: {e}")
-        return jsonify({"error": "Error deleting todos"}), 500
+    #         return jsonify(
+    #             {
+    #                 "message": f"Successfully deleted {deleted_count} todos",
+    #                 "deleted_count": deleted_count,
+    #             }
+    #         )
+    # except Exception as e:
+    #     db.session.rollback()
+    #     logger.error(f"Database error in bulk delete: {e}")
+    #     return jsonify({"error": "Error deleting todos"}), 500

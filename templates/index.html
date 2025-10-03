@@ -56,20 +56,19 @@
 
         <div class="features-grid">
             <a href="#feature1" class="feature-item">
-                <div class="feature-icon"></div>
+                <div class="feature-icon"><img src="{{ url_for('static', filename='images/svg/todo.svg') }}" alt="Task Management" class="feature-svg"></div>
                 <h3>Smart Task Management</h3>
                 <p>Create, edit, and organize your todos with intuitive controls and deadline tracking.</p>
             </a>
             <a href="#feature2" class="feature-item">
-                <div class="feature-icon"></div>
+                <div class="feature-icon"><img src="{{ url_for('static', filename='images/svg/teamcollab.svg') }}" alt="Team Collaboration" class="feature-svg"></div>
                 <h3>Team Collaboration</h3>
                 <p>Assign tasks to team members or groups, perfect for project management and coordination.</p>
             </a>
             <a href="#feature3" class="feature-item">
-                <div class="feature-icon"></div>
+                <div class="feature-icon"><img src="{{ url_for('static', filename='images/svg/securityicon.svg') }}" alt="Security" class="feature-svg"></div>
                 <h3>Secure & Reliable</h3>
-                <p>Built with security in mind, featuring user authentication, input validation, and data protection.
-                </p>
+                <p>Built with security in mind, featuring user authentication, input validation, and data protection.</p>
             </a>
         </div>
     </div>
@@ -87,13 +86,13 @@
             <div class="slider">
                 <div class="slides">
                     <div class="slide fade">
-                        <img src="{{ url_for('static', filename='images/taskmanage1.png') }}" alt="Smart Task Management Screenshot 1">
+                        <img src="{{ url_for('static', filename='images/taskmanage1.png') }}" alt="Smart Task Management Screenshot 1" loading="lazy" class="lazy-image">
                     </div>
                     <div class="slide fade">
-                        <img src="{{ url_for('static', filename='images/taskmanage2.png') }}" alt="Smart Task Management Screenshot 2">
+                        <img src="{{ url_for('static', filename='images/taskmanage2.png') }}" alt="Smart Task Management Screenshot 2" loading="lazy" class="lazy-image">
                     </div>
                     <div class="slide fade">
-                        <img src="{{ url_for('static', filename='images/taskmanage3.png') }}" alt="Smart Task Management Screenshot 3">
+                        <img src="{{ url_for('static', filename='images/taskmanage3.png') }}" alt="Smart Task Management Screenshot 3" loading="lazy" class="lazy-image">
                     </div>
                 </div>
                 <button class="prev"><</button>
@@ -114,13 +113,13 @@
             <div class="slider">
                 <div class="slides">
                     <div class="slide fade">
-                        <img src="{{ url_for('static', filename='images/teamcolab1.png') }}" alt="Team Collaboration Screenshot 1">
+                        <img src="{{ url_for('static', filename='images/teamcolab1.png') }}" alt="Team Collaboration Screenshot 1" loading="lazy" class="lazy-image">
                     </div>
                     <div class="slide fade">
-                        <img src="{{ url_for('static', filename='images/teamcolab2.png') }}" alt="Team Collaboration Screenshot 2">
+                        <img src="{{ url_for('static', filename='images/teamcolab2.png') }}" alt="Team Collaboration Screenshot 2" loading="lazy" class="lazy-image">
                     </div>
                     <div class="slide fade">
-                        <img src="{{ url_for('static', filename='images/teamcolab3.png') }}" alt="Team Collaboration Screenshot 3">
+                        <img src="{{ url_for('static', filename='images/teamcolab3.png') }}" alt="Team Collaboration Screenshot 3" loading="lazy" class="lazy-image">
                     </div>
                 </div>
                 <button class="prev"><</button>
@@ -196,8 +195,23 @@
     </div>
 </section>
 
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-content">
+            <div class="footer-copyright">
+                <p class="footer-text">© 2025 A J. All Rights Reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/AJIT301" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
 {% endblock %}
 {% block additional_scripts %}
 <script src="{{ url_for('static', filename='utils/smoothscroll.js') }}"></script>
 <script src="{{ url_for('static', filename='utils/slider.js') }}"></script>
+<script src="{{ url_for('static', filename='utils/simple-scroll-effects.js') }}"></script>
 {% endblock %}

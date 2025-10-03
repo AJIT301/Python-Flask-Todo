@@ -47,6 +47,15 @@ This is an **educational project** built to:
 - **Modern UI**: Clean, professional design with smooth animations
 - **Accessibility**: Semantic HTML and keyboard navigation support
 
+### 🔄 Latest Updates (2025-10-03)
+- **SVG Icon Integration**: Replaced emoji icons with custom SVG files for better scalability and professional appearance
+- **Enhanced Footer**: Added professional footer with copyright notice "© 2025 A J. All Rights Reserved." and GitHub link
+- **Responsive Footer Design**: Two-column layout on desktop, stacked on mobile devices
+- **Icon Styling**: Added proper CSS sizing and positioning for feature section SVG icons
+- **Security Enhancements**: Updated footer links with `noopener noreferrer` security attributes
+- **Type Safety Fixes**: Resolved Flask route type errors where `request.form.get()` could return `None` but functions expected `str`
+- **Model Query Optimizations**: Fixed SQLAlchemy query issues in user and group handling
+
 ---
 
 ## 🛠️ Technology Stack

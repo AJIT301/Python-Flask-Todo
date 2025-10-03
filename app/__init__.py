@@ -53,16 +53,27 @@ def create_app():
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["TEMPLATES_AUTO_RELOAD"] = True
+    # After setting SQLALCHEMY_DATABASE_URI
+    app.config["SQLALCHEMY_POOL_SIZE"] = 10
+    app.config["SQLALCHEMY_MAX_OVERFLOW"] = 20
+    app.config["SQLALCHEMY_POOL_TIMEOUT"] = 30  # Wait 30 seconds for connection
+    app.config["SQLALCHEMY_POOL_RECYCLE"] = 1800  # Recycle connections every 30 minutes
+    app.config["SQLALCHEMY_ECHO"] = False  # Set to True for debugging SQL queries
+
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)  # Initialize CSRF protection
+    app.config["WTF_CSRF_TIME_LIMIT"] = 3600  # 1 hour (default is 30 minutes)
+    app.config["WTF_CSRF_SSL_STRICT"] = False  # Important for HTTP in Docker
 
     # Configure rate limiter using app.config (Flask-Limiter v3+ API)
-    app.config['RATELIMIT_DEFAULT'] = "200 per day, 50 per hour"  # Comma-separated string
-    app.config['RATELIMIT_STORAGE_URI'] = "memory://"
-    app.config['RATELIMIT_STRATEGY'] = "fixed-window"
-    app.config['RATELIMIT_HEADERS_ENABLED'] = True
+    app.config["RATELIMIT_DEFAULT"] = (
+        "200 per day, 50 per hour"  # Comma-separated string
+    )
+    app.config["RATELIMIT_STORAGE_URI"] = "memory://"
+    app.config["RATELIMIT_STRATEGY"] = "fixed-window"
+    app.config["RATELIMIT_HEADERS_ENABLED"] = True
 
     # Initialize the limiter with the app
     limiter.init_app(app)
@@ -223,26 +234,26 @@ def create_app():
         # --- CSP Policy (ensure frame-ancestors is present) ---
         csp_policy = (
             f"default-src 'self'; "
-            f"script-src 'self'; " # Adjust as needed
-            f"style-src 'self' 'unsafe-inline'; " # Adjust as needed
+            f"script-src 'self'; "  # Adjust as needed
+            f"style-src 'self' 'unsafe-inline'; "  # Adjust as needed
             f"img-src 'self' ; "
             f"font-src 'self'; "
             f"connect-src 'self'; "
-            f"frame-ancestors 'none'; " # Modern ClickJacking protection
+            f"frame-ancestors 'none'; "  # Modern ClickJacking protection
             f"base-uri 'self'; "
             f"form-action 'self'; "
             # Optional reporting:
             # "report-uri /csp-report;"
-            f"object-src 'none'; " # <--- Add this line
+            f"object-src 'none'; "  # <--- Add this line
         )
-        response.headers['Content-Security-Policy'] = csp_policy
+        response.headers["Content-Security-Policy"] = csp_policy
 
         # --- Additional Security Headers ---
-        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers["X-Content-Type-Options"] = "nosniff"
         # --- Add X-Frame-Options for older browser compatibility ---
         # Use 'DENY' to match 'frame-ancestors 'none';' or 'SAMEORIGIN' to match 'frame-ancestors 'self';'
-        response.headers['X-Frame-Options'] = 'DENY' # <--- Add this line
-        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers["X-Frame-Options"] = "DENY"  # <--- Add this line
+        response.headers["X-XSS-Protection"] = "1; mode=block"
         # If using HTTPS, set HSTS (often better done by web server/nginx):
         # response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 

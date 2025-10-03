@@ -15,6 +15,14 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="text" name="username" placeholder="Username" value="{{ username }}" autocomplete="username">
         <input type="password" name="password" placeholder="Password">
+
+        <!-- Visual CAPTCHA Section -->
+        <div class="visual-captcha">
+            <p class="captcha-question">{{ visual_captcha.question }}</p>
+            <input type="text" name="captcha_answer" placeholder="Your answer" required autocomplete="off">
+            <input type="hidden" name="captcha_id" value="{{ visual_captcha.id }}">
+        </div>
+
         <button type="submit">Login</button>
     </form>
     <p>Don't have an account? Register <a href="{{ url_for('routes.register') }}" class="register-link">here</a></p>

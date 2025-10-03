@@ -7,6 +7,7 @@ from flask import request
 
 logger = logging.getLogger("SecurityHeaders")
 
+
 def add_production_security_headers(response):
     """
     Add production security headers to all responses
@@ -30,7 +31,7 @@ def add_production_security_headers(response):
     csp_policy = (
         "default-src 'self'; "
         "script-src 'self'; "  # No unsafe-inline or unsafe-eval
-        "style-src 'self'; "    # No unsafe-inline
+        "style-src 'self'; "  # No unsafe-inline
         "img-src 'self' https:; "
         "font-src 'self'; "
         "connect-src 'self'; "
@@ -62,17 +63,19 @@ def add_production_security_headers(response):
 
     # Override Server header - set it to generic value
     response.headers["Server"] = "Server"
-    response.headers.pop('X-Powered-By', None)
-    
+    response.headers.pop("X-Powered-By", None)
+
     return response
+
 
 def production_security_middleware(app):
     """
     Apply production security middleware to Flask app
     """
+
     @app.after_request
     def after_request(response):
         response = add_production_security_headers(response)
         return response
-    
+
     logger.info("Production security headers middleware initialized")

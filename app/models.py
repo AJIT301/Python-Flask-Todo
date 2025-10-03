@@ -42,6 +42,15 @@ deadline_group_assignments = db.Table(
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
+    def __init__(self, username=None, email=None, password=None, **kwargs):
+        super().__init__(**kwargs)
+        if username is not None:
+            self.username = username
+        if email is not None:
+            self.email = email
+        if password is not None:
+            self.password = password
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -77,6 +86,15 @@ class User(UserMixin, db.Model):
 class UserGroup(db.Model):
     __tablename__ = "user_groups"
 
+    def __init__(self, name=None, description=None, is_active=None, **kwargs):
+        super().__init__(**kwargs)
+        if name is not None:
+            self.name = name
+        if description is not None:
+            self.description = description
+        if is_active is not None:
+            self.is_active = is_active
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(
         db.String(50), unique=True, nullable=False
@@ -99,6 +117,21 @@ class UserGroup(db.Model):
 
 class Todo(db.Model):
     __tablename__ = "todos"
+
+    def __init__(self, task=None, done=None, created_at=None, date_from=None, date_to=None, created_by_id=None, **kwargs):
+        super().__init__(**kwargs)
+        if task is not None:
+            self.task = task
+        if done is not None:
+            self.done = done
+        if created_at is not None:
+            self.created_at = created_at
+        if date_from is not None:
+            self.date_from = date_from
+        if date_to is not None:
+            self.date_to = date_to
+        if created_by_id is not None:
+            self.created_by_id = created_by_id
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     task = db.Column(db.String(500), nullable=False)
@@ -176,6 +209,19 @@ class Todo(db.Model):
 class Deadline(db.Model):
     __tablename__ = "deadlines"
 
+    def __init__(self, title=None, description=None, deadline_date=None, is_active=None, created_by_id=None, **kwargs):
+        super().__init__(**kwargs)
+        if title is not None:
+            self.title = title
+        if description is not None:
+            self.description = description
+        if deadline_date is not None:
+            self.deadline_date = deadline_date
+        if is_active is not None:
+            self.is_active = is_active
+        if created_by_id is not None:
+            self.created_by_id = created_by_id
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
@@ -216,8 +262,8 @@ class Deadline(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "created_by": self.created_by.username if self.created_by else None,
-            "assigned_users_count": len(self.assigned_users),
-            "assigned_groups_count": len(self.assigned_groups),
+            "assigned_users_count": len(self.assigned_users),  # type: ignore / ??
+            "assigned_groups_count": len(self.assigned_groups),  # type: ignore / ??
         }
 
     def __repr__(self):

@@ -26,11 +26,11 @@
             {% endfor %}
         </select>
 
-        <!-- Lame Captcha Section -->
-        <div class="lame-captcha">
-            <p class="captcha-question">Answer in 1 word: {{ captcha_question }}</p>
+        <!-- Visual CAPTCHA Section -->
+        <div class="visual-captcha">
+            <p class="captcha-question">{{ visual_captcha.question }}</p>
             <input type="text" name="captcha_answer" placeholder="Your answer" required autocomplete="off">
-            <input type="hidden" name="captcha_expected" value="{{ captcha_expected }}">
+            <input type="hidden" name="captcha_id" value="{{ visual_captcha.id }}">
         </div>
 
         <button type="submit">Register</button>
